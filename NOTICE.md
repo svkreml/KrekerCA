@@ -46,3 +46,9 @@ author Vakhtang Koroghlishvili
 author John Hewson
 
 Licensed under the Apache License, Version 2.0 (the "License")
+
+### Changes:
+
+new hash algorithm
+
+some new methods
