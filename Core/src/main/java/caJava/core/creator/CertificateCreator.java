@@ -95,7 +95,10 @@ public class CertificateCreator {
         X500Name issuer;
         if (ca != null)
             issuer = new X500Name(ca.getSubjectX500Principal().getName(X500Principal.RFC2253));
-        else issuer = subject;
+        else {
+            issuer = subject;
+
+        }
         //Создание заготовки под сертификат
         X509v3CertificateBuilder x509v3CertificateBuilder = new JcaX509v3CertificateBuilder(
                 issuer,
@@ -106,7 +109,6 @@ public class CertificateCreator {
                 keypair.getPublic());
 
         //todo все расширения должны быть в каком-то конфиге, который на предыдущем этапе грузится из файла
-
         CertBuildContainer buildContainer = new CertBuildContainer(x509v3CertificateBuilder, keypair, ca);
         for (ExtensionParam extension : extensions) {
             extensionsHashMap.get(extension.name).apply(buildContainer, extension.params);
@@ -219,7 +221,7 @@ public class CertificateCreator {
         DistributionPointName distributionPoint = new DistributionPointName(new GeneralNames(new GeneralName(GeneralName.uniformResourceIdentifier, "http://10.216.0.72:81/revoked.crl")));
         DistributionPoint[] distPoints = new DistributionPoint[1];
         distPoints[0] = new DistributionPoint(distributionPoint, null, null);
-        System.out.println("добавление списка отзывов " + Extension.cRLDistributionPoints);
+        logger.info("добавление списка отзывов " + Extension.cRLDistributionPoints);
         x509v3CertificateBuilder.addExtension(Extension.cRLDistributionPoints, false, new CRLDistPoint(distPoints));
     }
 

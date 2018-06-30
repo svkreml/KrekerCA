@@ -167,8 +167,13 @@ public class ExtensionsHashMap extends HashMap<String, BiFunction<CertBuildConta
             //  if (ca == null) return false; //корневому сертификату это не нужно
             try {
                 if (params.length == 1) {
-                    GeneralName generalName = new GeneralName(new X500Name(certBuildContainer.getCaCert().getSubjectX500Principal().getName(X500Principal.RFC2253)));
+                    if(certBuildContainer.getCaCert()==null) {
+                        throw new NullPointerException("Если есть authorityKeyIdentifier, то должен быть УЦ");
+                    }
+                        GeneralName generalName = new GeneralName(new X500Name(certBuildContainer.getCaCert().getSubjectX500Principal().getName(X500Principal.RFC2253)));
+
                     GeneralNames generalNames = new GeneralNames(generalName);
+
                     certBuildContainer.getX509v3CertificateBuilder().addExtension(Extension.authorityKeyIdentifier, Boolean.valueOf(params[0]),
                             new JcaX509ExtensionUtils().createAuthorityKeyIdentifier(certBuildContainer.getCaCert().getPublicKey(), generalNames, certBuildContainer.getCaCert().getSerialNumber()));
                     return true;
