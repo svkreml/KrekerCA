@@ -18,17 +18,19 @@
  */
 package org.apache.synapse.transport.certificatevalidation;
 
-import junit.framework.TestCase;
+
 import org.apache.synapse.transport.certificatevalidation.crl.CRLCache;
 import org.apache.synapse.transport.certificatevalidation.crl.CRLVerifier;
 import org.apache.synapse.transport.certificatevalidation.ocsp.OCSPCache;
 import org.apache.synapse.transport.certificatevalidation.ocsp.OCSPVerifier;
 import org.apache.synapse.transport.certificatevalidation.pathvalidation.CertificatePathValidator;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.security.Security;
 import java.security.cert.X509Certificate;
 
-public class RevocationVerificationTest extends TestCase {
+public class RevocationVerificationTest  {
 
     /**
      * Tests CRL Path Validation with the use of a real certificate chain. The verification process will make
@@ -38,6 +40,7 @@ public class RevocationVerificationTest extends TestCase {
      * accordingly. See the interface Constants for expiry dates of the certificates.
      * @throws Exception
      */
+    @Test
     public void testCRLPathValidation() throws Exception {
         //Add BouncyCastle as Security Provider.
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
@@ -50,7 +53,7 @@ public class RevocationVerificationTest extends TestCase {
             //Path Verification Should Pass. This catch block should not be called
             throwable = e;
         }
-        assertNull(throwable);
+        Assert.assertNull(throwable);
 
     }
 
@@ -59,6 +62,7 @@ public class RevocationVerificationTest extends TestCase {
      * contain proper information.
      * @throws Exception
      */
+    @Test
     public void testCRLPathValidationWithFakeCerts() throws Exception {
         //Add BouncyCastle as Security Provider.
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
@@ -71,7 +75,7 @@ public class RevocationVerificationTest extends TestCase {
             //Path Verification Should fail. So this catch block should be called.
             throwable = e;
         }
-        assertNotNull(throwable);
+        Assert.assertNotNull(throwable);
     }
 
     /**
@@ -79,6 +83,7 @@ public class RevocationVerificationTest extends TestCase {
      * certificate authorities. The path validation must be successful to pass the test.
      * @throws Exception
      */
+    @Test
     public void testOCSPPathValidation() throws Exception {
         //Add BouncyCastle as Security Provider.
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
@@ -89,9 +94,10 @@ public class RevocationVerificationTest extends TestCase {
             ocspPathValidation(certificates);
         } catch (CertificateVerificationException e) {
             //Path Verification Should Pass. This catch block should not be called
+            e.printStackTrace();
             throwable = e;
         }
-        assertNull(throwable);
+        Assert.assertNull(throwable);
     }
 
     /**
@@ -99,6 +105,7 @@ public class RevocationVerificationTest extends TestCase {
      * should fail since the certificates are fake and do not contain right information.
      * @throws Exception
      */
+    @Test
     public void testOCSPPathValidationWithFakeCerts() throws Exception {
 
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
@@ -111,7 +118,7 @@ public class RevocationVerificationTest extends TestCase {
             //Path Verification Should fail. So this catch block should be called.
             throwable = e;
         }
-        assertNotNull(throwable);
+       Assert.assertNotNull(throwable);
     }
 
     private void crlPathValidation(X509Certificate[] certChain) throws Exception {

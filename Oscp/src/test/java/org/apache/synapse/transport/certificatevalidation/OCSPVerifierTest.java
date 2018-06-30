@@ -18,10 +18,7 @@
  */
 package org.apache.synapse.transport.certificatevalidation;
 
-import caJava.core.cryptoAlg.CryptoAlg;
-import caJava.core.cryptoAlg.impl.CryptoAlgGost2012_256;
-import junit.framework.TestCase;
-import org.apache.log4j.PropertyConfigurator;
+
 import org.apache.synapse.transport.certificatevalidation.ocsp.OCSPCache;
 import org.apache.synapse.transport.certificatevalidation.ocsp.OCSPVerifier;
 import org.bouncycastle.asn1.ASN1InputStream;
@@ -38,6 +35,8 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.*;
 import java.lang.reflect.Method;
@@ -49,7 +48,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 
-public class OCSPVerifierTest extends TestCase {
+public class OCSPVerifierTest {
 
     private static X509Certificate getCertFromFile(String path) {
         X509Certificate cert = null;
@@ -80,6 +79,7 @@ public class OCSPVerifierTest extends TestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testOCSPVerifier() throws Exception {
 
         //Add BouncyCastle as Security Provider.
@@ -118,9 +118,9 @@ public class OCSPVerifierTest extends TestCase {
 
         //the cache will have the SingleResponse derived from the OCSP response and it will be checked to see if the
         //fake certificate is revoked. So the status should be REVOKED.
-        assertTrue(status == RevocationStatus.REVOKED);
+        Assert.assertTrue(status == RevocationStatus.REVOKED);
     }
-
+    @Test
     public void testOCSPVerifie2() throws Exception {
 //        PropertyConfigurator.configure("log4j.properties");
         //Add BouncyCastle as Security Provider.
@@ -149,7 +149,7 @@ public class OCSPVerifierTest extends TestCase {
 
         System.out.println(status);
     }
-
+    @Test
     public void testOCSPVerifie3() throws Exception {
         //Add BouncyCastle as Security Provider.
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());

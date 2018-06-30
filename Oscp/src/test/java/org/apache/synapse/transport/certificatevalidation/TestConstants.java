@@ -38,7 +38,7 @@ public interface TestConstants {
      * DigiCertHighAssuranceEVCA-1.cer   : 11/10/2021
      * DigiCertHighAssuranceEVRootCA.cer : 11/10/2031
      */
-    final static String REAL_PEER_CERT = "github.com.cer";
-    final static String INTERMEDIATE_CERT = "DigiCertHighAssuranceEVCA-1.cer";
-    final static String ROOT_CERT = "DigiCertHighAssuranceEVRootCA.cer";
+    final static String REAL_PEER_CERT = "src\\test\\resources\\org\\apache\\synapse\\transport\\certificatevalidation\\github.com.cer";
+    final static String INTERMEDIATE_CERT = "src\\test\\resources\\org\\apache\\synapse\\transport\\certificatevalidation\\DigiCertHighAssuranceEVCA-1.cer";
+    final static String ROOT_CERT = "src\\test\\resources\\org\\apache\\synapse\\transport\\certificatevalidation\\DigiCertHighAssuranceEVRootCA.cer";
 }

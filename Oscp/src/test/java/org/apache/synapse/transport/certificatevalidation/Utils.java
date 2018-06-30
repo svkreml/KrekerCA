@@ -125,7 +125,7 @@ public class Utils {
     private X509Certificate createCertificateFromResourceFile(String resourcePath) throws Exception{
 
         CertificateFactory certFactory = CertificateFactory.getInstance("X.509", "BC");
-        File faceBookCertificateFile = new File(this.getClass().getResource(resourcePath).toURI());
+        File faceBookCertificateFile = new File(resourcePath).getAbsoluteFile();
         InputStream in = new FileInputStream(faceBookCertificateFile);
         X509Certificate certificate = (X509Certificate) certFactory.generateCertificate(in);
         return certificate;

@@ -18,13 +18,15 @@
  */
 package org.apache.synapse.transport.certificatevalidation;
 
-import junit.framework.TestCase;
+
 import org.apache.synapse.transport.certificatevalidation.crl.CRLCache;
 import org.apache.synapse.transport.certificatevalidation.crl.CRLVerifier;import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.x509.X509V2CRLGenerator;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 import org.bouncycastle.x509.extension.AuthorityKeyIdentifierStructure;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.lang.reflect.Method;
 import java.math.BigInteger;
@@ -34,7 +36,7 @@ import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.List;
 
-public class CRLVerifierTest extends TestCase {
+public class CRLVerifierTest {
 
     /**
      * To test CRLVerifier behaviour when a revoked certificate is given, a fake certificate will be created, signed
@@ -45,6 +47,7 @@ public class CRLVerifierTest extends TestCase {
      * cache, there will NOT be a remote call to the CRL server at criDistributionPointURL.
      * @throws Exception
      */
+    @Test
     public void testRevokedCertificate() throws Exception {
 
         //Add BouncyCastle as Security Provider.
@@ -77,7 +80,7 @@ public class CRLVerifierTest extends TestCase {
         RevocationStatus status = crlVerifier.checkRevocationStatus(fakeRevokedCertificate, null);
 
         //the fake crl we created will be checked if the fake certificate is revoked. So the status should be REVOKED.
-        assertTrue(status == RevocationStatus.REVOKED);
+        Assert.assertTrue(status == RevocationStatus.REVOKED);
     }
 
     /**

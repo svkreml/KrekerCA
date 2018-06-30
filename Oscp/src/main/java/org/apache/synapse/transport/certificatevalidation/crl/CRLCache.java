@@ -18,8 +18,8 @@
  */
 package org.apache.synapse.transport.certificatevalidation.crl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.synapse.commons.jmx.MBeanRegistrar;
 import org.apache.synapse.transport.certificatevalidation.cache.CacheController;
@@ -45,7 +45,7 @@ public class CRLCache implements ManageableCache {
     private static volatile Iterator<Map.Entry<String, CRLCacheValue>> iterator = hashMap.entrySet().iterator();
     private static volatile CacheManager cacheManager;
     private static CRLVerifier crlVerifier = new CRLVerifier(null);
-    private static final Log log = LogFactory.getLog(CRLCache.class);
+    private static final Logger log = Logger.getLogger(CRLCache.class.getName());
 
     private CRLCache() {
     }
@@ -119,7 +119,7 @@ public class CRLCache implements ManageableCache {
             X509CRL x509CRL = crlVerifier.downloadCRLFromWeb(crlUrl);
             this.setCacheValue(crlUrl, x509CRL);
         } catch (Exception e) {
-            log.info("Cant replace old CacheValue with new CacheValue. So remove", e);
+            log.log(Level.INFO,"Cant replace old CacheValue with new CacheValue. So remove", e);
             //If cant be replaced remove.
             cacheValue.removeThisCacheValue();
         }
