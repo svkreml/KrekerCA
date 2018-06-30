@@ -16,7 +16,7 @@ import java.io.IOException;
 public class Base64GuiController {
     final Clipboard clipboard = Clipboard.getSystemClipboard();
 
-    final int MAX_FILE_SIZE = 1_000_000;
+
     @FXML
     public TextArea textAreaBase64;
     @FXML
@@ -66,9 +66,9 @@ buttonCancel2.setVisible(true);
     @FXML
     public void buttonLoadFileOriginal(ActionEvent actionEvent) {
         try {
-            File file = fileChooser("Выбор файла original");
+            File file = JavaFxUtils.fileChooser("Выбор файла original");
             byte[] bytes = FileManager.read(file);
-            if (bytes.length > MAX_FILE_SIZE) {
+            if (bytes.length > JavaFxUtils.MAX_FILE_SIZE_FOR_TEXT_AREA) {
                 bigOriginalContent = bytes;
                 setBigfile();
             } else {
@@ -120,9 +120,10 @@ buttonCancel2.setVisible(true);
     @FXML
     public void buttonLoadFileBase64(ActionEvent actionEvent) {
         try {
-            File file = fileChooser("Выбор файла base64");
+
+            File file = JavaFxUtils.fileChooser("Выбор файла base64");
             byte[] bytes = FileManager.read(file);
-            if (bytes.length > MAX_FILE_SIZE) {
+            if (bytes.length > JavaFxUtils.MAX_FILE_SIZE_FOR_TEXT_AREA) {
                 bigBase64Content = new String(bytes);
                 setBigfile();
             } else {
@@ -153,16 +154,6 @@ buttonCancel2.setVisible(true);
         textAreaBase64.setText(Base64.toBase64String(textAreaOriginalText.getBytes()));
     }
 
-    private File fileChooser(String s) {
-        FileChooser fileChooser = new FileChooser();
-        File selectedFile = fileChooser.showOpenDialog(null);
-        fileChooser.setTitle(s);
-        fileChooser.setInitialDirectory(new File("C:\\"));
-        if (selectedFile != null) {
-            return selectedFile;
-        }
-        throw new NullPointerException("Файл не выбран");
-    }
 
     @FXML
     public void initialize() {
