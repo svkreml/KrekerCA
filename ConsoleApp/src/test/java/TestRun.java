@@ -33,7 +33,20 @@ public class TestRun {
     public void createCert(){
         String[] args = {"-run", "createCert", "-subject", "subject.json", "-extensions", "file", "-extensions", "extensions.json", "-outputDer",
                 "testSub.der", "-pass", "123456", "-alg", "rsa2048","-dateFrom","2012-12-24","-dateTo","2024-12-24",
-        "-ca","-caFile", "test.der","-caPKey","test.der.pkey"};
+                "-ca","-caFile", "test.der","-caPKey","test.der.pkey"};
+        try {
+            Main.main(args);
+            assert true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert false;
+        }
+    }
+    @Test
+    public void createCertOcsp(){
+        String[] args = {"-run", "createCert", "-subject", "subject.json", "-extensions", "file", "-extensions", "extensionsOCSP.json", "-outputDer",
+                "testSubOCSP.der", "-pass", "123456", "-alg", "rsa2048","-dateFrom","2012-12-24","-dateTo","2024-12-24",
+                "-ca","-caFile", "test.der","-caPKey","test.der.pkey"};
         try {
             Main.main(args);
             assert true;

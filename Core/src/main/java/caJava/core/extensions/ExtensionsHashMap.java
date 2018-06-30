@@ -2,6 +2,7 @@ package caJava.core.extensions;
 
 import caJava.customOID.CustomExtension;
 import org.bouncycastle.asn1.*;
+import org.bouncycastle.asn1.ocsp.OCSPObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.cert.CertIOException;
@@ -157,6 +158,23 @@ public class ExtensionsHashMap extends HashMap<String, BiFunction<CertBuildConta
                     return true;
                 }
 
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }));
+        //1.3.6.1.5.5.7.1.1 Доступ к сведениям центрах сертификации
+        put("authorityInfoAccess", ((certBuildContainer, params) -> {
+            //  if (ca == null) return false; //корневому сертификату это не нужно
+            try {
+                if (params.length >= 1) {
+                    ASN1EncodableVector vec = new ASN1EncodableVector();
+                    vec.add(new AccessDescription(AccessDescription.id_ad_ocsp, new GeneralName(GeneralName.uniformResourceIdentifier,"http://ocsp.digicert.com")));
+                    vec.add(new AccessDescription(AccessDescription.id_ad_caIssuers, new GeneralName(GeneralName.uniformResourceIdentifier,"http://cacerts.digicert.com/DigiCertSHA2ExtendedValidationServerCA.crt")));
+                    AuthorityInformationAccess authorityInformationAccess = AuthorityInformationAccess.getInstance(new DERSequence(vec));
+                    certBuildContainer.getX509v3CertificateBuilder().addExtension(Extension.authorityInfoAccess, Boolean.valueOf(params[0]), authorityInformationAccess);
+                    return true;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
