@@ -30,6 +30,7 @@
         <module>TSPclient</module>
         <module>OcspClient</module>
         <module>JavaFxGui</module>
+        <module>Oscp</module>
     </modules>
 
     <dependencies>
