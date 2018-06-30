@@ -167,10 +167,10 @@ public class ExtensionsHashMap extends HashMap<String, BiFunction<CertBuildConta
         put("authorityInfoAccess", ((certBuildContainer, params) -> {
             //  if (ca == null) return false; //корневому сертификату это не нужно
             try {
-                if (params.length >= 1) {
+                if (params.length == 3) {
                     ASN1EncodableVector vec = new ASN1EncodableVector();
-                    vec.add(new AccessDescription(AccessDescription.id_ad_ocsp, new GeneralName(GeneralName.uniformResourceIdentifier,"http://ocsp.digicert.com")));
-                    vec.add(new AccessDescription(AccessDescription.id_ad_caIssuers, new GeneralName(GeneralName.uniformResourceIdentifier,"http://cacerts.digicert.com/DigiCertSHA2ExtendedValidationServerCA.crt")));
+                    vec.add(new AccessDescription(AccessDescription.id_ad_ocsp, new GeneralName(GeneralName.uniformResourceIdentifier,params[1])));
+                    vec.add(new AccessDescription(AccessDescription.id_ad_caIssuers, new GeneralName(GeneralName.uniformResourceIdentifier,params[2])));
                     AuthorityInformationAccess authorityInformationAccess = AuthorityInformationAccess.getInstance(new DERSequence(vec));
                     certBuildContainer.getX509v3CertificateBuilder().addExtension(Extension.authorityInfoAccess, Boolean.valueOf(params[0]), authorityInformationAccess);
                     return true;

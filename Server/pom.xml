@@ -6,6 +6,7 @@
 
     <groupId>ByMe</groupId>
     <artifactId>Server</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <build>
         <plugins>
@@ -19,6 +20,11 @@
             </plugin>
         </plugins>
     </build>
+    <modules>
+        <module>OcspServer</module>
+        <module>CrtServer</module>
+        <module>Crl</module>
+    </modules>
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>
