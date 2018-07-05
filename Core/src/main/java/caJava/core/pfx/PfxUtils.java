@@ -2,14 +2,13 @@ package caJava.core.pfx;
 
 import caJava.Utils.MeUtils;
 import caJava.core.CertAndKey;
+import caJava.fileManagement.CertEnveloper;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.jcajce.provider.keystore.pkcs12.PKCS12KeyStoreSpi;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.*;
-import java.security.Key;
-import java.security.KeyStoreException;
-import java.security.PrivateKey;
-import java.security.Security;
+import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Enumeration;
@@ -27,11 +26,14 @@ public class PfxUtils {
             System.out.println(ks.getClass().getName());
             System.out.println(ks.engineSize());
             Enumeration enumeration = ks.engineAliases();
+            //ks.get
             while (enumeration.hasMoreElements()) {
                 Object nextElement = enumeration.nextElement();
                 System.out.println(nextElement);
                 Key key = ks.engineGetKey(nextElement.toString(), password.toCharArray());
+                Certificate cert = ks.engineGetCertificate(nextElement.toString());
                 //FileManager.write(new File("outputCer/test.pkey"), CertEnveloper.encodePrivateKey((PrivateKey) key));
+                return new CertAndKey(new KeyPair(cert.getPublicKey(),(PrivateKey) key), CertEnveloper.decodeCert(cert.getEncoded()));
             }
         } catch (Exception e) {
             e.printStackTrace();

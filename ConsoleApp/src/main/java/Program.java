@@ -4,6 +4,7 @@ import caJava.core.cryptoAlg.CryptoAlg;
 import caJava.core.cryptoAlg.impl.CryptoAlgGost2001;
 import caJava.core.cryptoAlg.impl.CryptoAlgGost2012_256;
 import caJava.core.cryptoAlg.impl.CryptoRSA;
+import caJava.core.pfx.PfxUtils;
 import caJava.core.wrapper.ExtensionsMap;
 import caJava.core.wrapper.SubjectMap;
 import caJava.fileManagement.CertEnveloper;
@@ -64,7 +65,10 @@ public class Program {
         Date startDate = Date.from(Date.from(LocalDate.parse(params.get("dateFrom"), DateTimeFormatter.ISO_DATE).atStartOfDay(ZoneOffset.UTC).toInstant()).toInstant());
         Date endDate = Date.from(Date.from(LocalDate.parse(params.get("dateTo"), DateTimeFormatter.ISO_DATE).atStartOfDay(ZoneOffset.UTC).toInstant()).toInstant());
         CertAndKey certAndKey;
-        if (params.containsKey("ca")) {
+        if(params.containsKey("pfx")){
+            certAndKey = PfxUtils.convertToCertAndKey(new File(params.get("pfx")),params.get("pass"));
+        }
+        else if (params.containsKey("ca")) {
             ca = new File(params.get("caFile"));
             caPkey = new File(params.get("caPKey"));
             byte[] bytes = FileManager.read(ca);
@@ -73,6 +77,7 @@ public class Program {
             certAndKey = certificateCreator.generateCertificate(SubjectMap.get(subject), ExtensionsMap.getVector(extensions),
                     BigInteger.valueOf(new Random().nextLong()), startDate, endDate, caCert, privateKey);
         }
+
             else
             certAndKey = certificateCreator.generateCertificate(SubjectMap.get(subject), ExtensionsMap.getVector(extensions),  BigInteger.valueOf(new Random().nextLong()), startDate, endDate);
 

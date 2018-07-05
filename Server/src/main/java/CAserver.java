@@ -18,7 +18,7 @@ public class CAserver {
     public static void main(String[] args) throws URISyntaxException, MalformedURLException {
 
 
-        Server server = new Server(81);
+        Server server = new Server(80);
 
         URL url = CAserver.class.getClassLoader().getResource("pages/");
 
@@ -38,6 +38,7 @@ public class CAserver {
 
 
         addServlet(context,  "/sendfile", new SaveFile());
+        addServlet(context,  "/ocsp", new OcspServer());
 
         server.setHandler(context);
 
