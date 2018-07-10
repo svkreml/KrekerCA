@@ -40,7 +40,7 @@ public class SubjectMap {
     }
 
     public static X500Name get(File file) throws IOException {
-        X500NameBuilder x500NameBld = new X500NameBuilder(BCStyle.INSTANCE);
+        X500NameBuilder x500NameBld = new X500NameBuilder(CustomBCStyle.INSTANCE);
         Map<String, String> map = (Map<String, String>) Json.readValue(LinkedHashMap.class, file);
         map.forEach((String oid, String value) ->{
             x500NameBld.addRDN((ASN1ObjectIdentifier) CustomBCStyle.DefaultLookUp.get(oid.toLowerCase()),value);
