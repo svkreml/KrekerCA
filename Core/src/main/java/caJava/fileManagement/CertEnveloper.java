@@ -1,17 +1,27 @@
 package caJava.fileManagement;
 
 import caJava.Utils.MeUtils;
+import caJava.core.cryptoAlg.CryptoAlg;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 
+import org.bouncycastle.asn1.pkcs.RSAPrivateKey;
 import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.openssl.PEMException;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
+import org.bouncycastle.operator.AlgorithmNameFinder;
+import org.bouncycastle.operator.DefaultAlgorithmNameFinder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 
 
 import java.io.*;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.cert.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 import java.util.logging.Logger;
 /*
@@ -76,13 +86,33 @@ public class CertEnveloper {
         //todo decodeCert decodeCertRec
         return null;
     }
-
+   static DefaultAlgorithmNameFinder defaultAlgorithmNameFinder = new DefaultAlgorithmNameFinder();
     public static PrivateKey decodePrivateKey(File privateKeyFile) throws IOException {
+        try {
+            PEMParser pemParser = new PEMParser(new FileReader(privateKeyFile));
+            PrivateKeyInfo privateKeyInfo = (PrivateKeyInfo) pemParser.readObject();
+            KeyFactory factory = KeyFactory.getInstance(defaultAlgorithmNameFinder.getAlgorithmName(privateKeyInfo.getPrivateKeyAlgorithm()),"BC");
+            PKCS8EncodedKeySpec privKeySpec = new PKCS8EncodedKeySpec(privateKeyInfo.getEncoded());
+            return factory.generatePrivate(privKeySpec);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        }
+        return  null;
+    }
+    public static PrivateKey decodePrivateKey2(File privateKeyFile) throws IOException {
         //File privateKeyFile = new File("cer.pkey"); // private key file in PEM format
         PEMParser pemParser = new PEMParser(new FileReader(privateKeyFile));
-        Object object = pemParser.readObject();
+        PrivateKeyInfo object = (PrivateKeyInfo) pemParser.readObject();
         JcaPEMKeyConverter jcaPEMKeyConverter = new JcaPEMKeyConverter();
-        return jcaPEMKeyConverter.getPrivateKey((PrivateKeyInfo) object);
+        PrivateKey privateKey = null;
+        try {
+            privateKey = jcaPEMKeyConverter.getPrivateKey(object);
+        } catch (PEMException e) {
+            e.printStackTrace();
+        }
+        return privateKey;
         //todo decodePrivateKey (если надо)
         // https://stackoverflow.com/questions/22920131/read-an-encrypted-private-key-with-bouncycastle-spongycastle
     }

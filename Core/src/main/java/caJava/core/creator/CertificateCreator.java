@@ -285,7 +285,7 @@ public class CertificateCreator {
 
     private X500Name fillSubject(LinkedHashMap<String, Object> subject) {
 
-        X500NameBuilder x500NameBld = new X500NameBuilder(BCStyle.INSTANCE);
+        X500NameBuilder x500NameBld = new X500NameBuilder(CustomBCStyle.INSTANCE);
 
         subject.forEach((k, v) -> {
             if (v instanceof String)

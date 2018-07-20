@@ -24,6 +24,11 @@ public class CertAndKey {
         this.keyPair = keyPair;
     }
 
+    public CertAndKey(PrivateKey privateKey, X509Certificate... certificateChain) {
+        if (certificateChain.length < 1) throw new NullPointerException("Нет ни одного сертификата");
+        this.certificateChain = certificateChain;
+        this.keyPair = new KeyPair(certificateChain[0].getPublicKey(), privateKey);
+    }
 
     public X509Certificate[] getCertificateChain() {
         return certificateChain;

@@ -31,6 +31,7 @@
         <module>OcspClient</module>
         <module>JavaFxGui</module>
         <module>Oscp</module>
+        <module>Signer</module>
     </modules>
 
     <dependencies>

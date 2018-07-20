@@ -32,7 +32,7 @@ public class PfxUtilsTests {
         CertificateCreator certificateCreator = new CertificateCreator(CryptoAlgGost2012_256.getCryptoAlg());
         Vector<ExtensionParam> extensions = new Vector<>();
         //Имя
-        X500NameBuilder x500NameBld = new X500NameBuilder(BCStyle.INSTANCE);
+        X500NameBuilder x500NameBld = new X500NameBuilder(CustomBCStyle.INSTANCE);
 
 /*"..".replaceAll("-----.*-----","").getBytes();
         Base64.getEncoder().encodeToString()*/

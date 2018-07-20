@@ -1,3 +1,4 @@
+import caJava.Utils.MeUtils;
 import org.bouncycastle.operator.OperatorCreationException;
 
 import java.io.IOException;
@@ -8,15 +9,19 @@ import java.security.cert.CertificateException;
 import java.util.LinkedHashMap;
 
 public class Main {
-    public static void main(String[] args) throws CertificateException, NoSuchAlgorithmException, IOException, OperatorCreationException, NoSuchProviderException, InvalidAlgorithmParameterException {
+    public static void main(String[] args) throws Exception {
+        MeUtils.loadBC();
         LinkedHashMap<String, String> params = parseParams(args);
         System.out.println(params);
         switch (params.get("run")) {
             case "createCert":
-                Program.createCert(params);
+                CreateCert.run(params);
+                break;
+            case "convert":
+                Convert.run(params);
                 break;
             default:
-                System.out.println("error");
+                System.out.println("нет такого параметра run");
         }
     }
 

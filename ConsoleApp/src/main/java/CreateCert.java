@@ -27,8 +27,8 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Random;
 
-public class Program {
-    static public void createCert(LinkedHashMap<String, String> params) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException, IOException, CertificateException, OperatorCreationException {
+public class CreateCert {
+    static public void run(LinkedHashMap<String, String> params) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException, IOException, CertificateException, OperatorCreationException {
 
 
         String alg = params.getOrDefault("alg", "gost2012_256");
