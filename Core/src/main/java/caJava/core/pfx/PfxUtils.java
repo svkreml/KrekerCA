@@ -23,13 +23,13 @@ public class PfxUtils {
             Security.addProvider(new BouncyCastleProvider());
             PKCS12KeyStoreSpi.BCPKCS12KeyStore ks = new PKCS12KeyStoreSpi.BCPKCS12KeyStore();
             ks.engineLoad(stream, password.toCharArray());
-            System.out.println(ks.getClass().getName());
-            System.out.println(ks.engineSize());
+
+            logger.info("Ключей в контейнере: "+ks.engineSize());
             Enumeration enumeration = ks.engineAliases();
             //ks.get
             while (enumeration.hasMoreElements()) {
                 Object nextElement = enumeration.nextElement();
-                System.out.println(nextElement);
+                logger.info("Алиас: "+nextElement);
                 Key key = ks.engineGetKey(nextElement.toString(), password.toCharArray());
                 Certificate cert = ks.engineGetCertificate(nextElement.toString());
                 //FileManager.write(new File("outputCer/test.pkey"), CertEnveloper.encodePrivateKey((PrivateKey) key));

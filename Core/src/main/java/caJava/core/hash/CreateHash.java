@@ -10,6 +10,9 @@ import java.security.MessageDigest;
 import java.util.logging.Logger;
 
 public class CreateHash {
+
+
+
     private static Logger logger = Logger.getLogger(CreateHash.class.getName());
     public static void main(String[] args) {
         if(args.length>1){
@@ -79,8 +82,22 @@ public class CreateHash {
     }
 
 
+//custom
+    public static byte[] digest(byte[] bytes, MessageDigest messageDigest) {
+        byte[] hashedString = messageDigest.digest(bytes);
+        String hex = MeUtils.bytesToHex(hashedString);
+        logger.info("Получен хэш " + hex);
+        return hashedString;
+    }
 
-
+    public static byte[] digest(File inputFile, MessageDigest messageDigest) throws IOException {
+        logger.info("Генерация хэша ГОСТ " + inputFile);
+        byte[] bytes = read(inputFile);
+        return digest(bytes, messageDigest);
+    }
+    public static byte[] digest(String inputFile, MessageDigest messageDigest) throws IOException {
+        return  digest(new File(inputFile), messageDigest);
+    }
 
 
 

@@ -11,12 +11,7 @@
 
     <artifactId>OcspServer</artifactId>
     <dependencies>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk15on</artifactId>
-            <version>1.59</version>
-            <scope>compile</scope>
-        </dependency>
+
         <dependency>
             <groupId>ByMe</groupId>
             <artifactId>Core</artifactId>
