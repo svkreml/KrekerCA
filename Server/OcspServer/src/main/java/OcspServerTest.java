@@ -120,7 +120,7 @@ public class OcspServerTest implements HttpHandler {
      
      public byte[] processOcspRequest(byte[] requestBytes) {
          try {
-             // get request info
+             // load request info
              OCSPReq ocspRequest = new OCSPReq(requestBytes);
              X509CertificateHolder[] requestCerts = ocspRequest.getCerts();
              Req[] requestList = ocspRequest.getRequestList();

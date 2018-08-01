@@ -69,16 +69,16 @@ public class CertificateCreator {
                 "\"КриптоПро УЦ\" версии 2.0",
                 "Сертификат соответствия № СФ/124-2539 от 15.01.2015",
                 "Сертификат соответствия № СФ/128-2881 от 12.04.2016"};
-        extensionsHashMap.get("issuerSignTool").apply(x509v3CertificateBuilder, issuerSignTool);
-        extensionsHashMap.get("subjectSignTool").apply(x509v3CertificateBuilder, "\"КриптоПро CSP\" (версия 3.9)");
-        extensionsHashMap.get("certificatePolicies").apply(x509v3CertificateBuilder, new String[]{"1.2.643.100.113.1", "1.2.643.100.113.2", "1.2.643.100.113.3", "1.2.643.100.113.4", "1.2.643.100.113.5", "2.5.29.32.0"});
-        extensionsHashMap.get("subjectKeyIdentifier").apply(x509v3CertificateBuilder, keypair);
-        extensionsHashMap.get("keyUsage").apply(x509v3CertificateBuilder, null);
+        extensionsHashMap.load("issuerSignTool").apply(x509v3CertificateBuilder, issuerSignTool);
+        extensionsHashMap.load("subjectSignTool").apply(x509v3CertificateBuilder, "\"КриптоПро CSP\" (версия 3.9)");
+        extensionsHashMap.load("certificatePolicies").apply(x509v3CertificateBuilder, new String[]{"1.2.643.100.113.1", "1.2.643.100.113.2", "1.2.643.100.113.3", "1.2.643.100.113.4", "1.2.643.100.113.5", "2.5.29.32.0"});
+        extensionsHashMap.load("subjectKeyIdentifier").apply(x509v3CertificateBuilder, keypair);
+        extensionsHashMap.load("keyUsage").apply(x509v3CertificateBuilder, null);
         if (ca != null) {
-            extensionsHashMap.get("authorityKeyIdentifier").apply(x509v3CertificateBuilder, ca);
-            extensionsHashMap.get("cRLDistributionPoints").apply(x509v3CertificateBuilder, "http://localhost:81/revoked.crl");
+            extensionsHashMap.load("authorityKeyIdentifier").apply(x509v3CertificateBuilder, ca);
+            extensionsHashMap.load("cRLDistributionPoints").apply(x509v3CertificateBuilder, "http://localhost:81/revoked.crl");
         }
-        extensionsHashMap.get("basicConstraints").apply(x509v3CertificateBuilder, null);
+        extensionsHashMap.load("basicConstraints").apply(x509v3CertificateBuilder, null);
     }*/
 
 
@@ -252,8 +252,7 @@ public class CertificateCreator {
         addExtensions(keypair.getPublic(), subject, serial, certificate);
 
         // build BouncyCastle certificate
-        ContentSigner signer = new JcaContentSignerBuilder(cryptoAlg.signatureAlgorithm)
-                .build(keypair.getPrivate());
+        ContentSigner signer = new JcaContentSignerBuilder(cryptoAlg.signatureAlgorithm).build(keypair.getPrivate());
         X509CertificateHolder holder = certificate.build(signer);
 
         // convert to JRE certificate

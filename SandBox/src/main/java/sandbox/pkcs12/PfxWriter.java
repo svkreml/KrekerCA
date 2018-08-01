@@ -36,7 +36,7 @@ public class PfxWriter {
 
         //ks.engineLoad(stream, "1234567890".toCharArray());
        // String keyName = (String) ks.engineAliases().nextElement();
-      //  System.out.println(ks.getClass().get());
+      //  System.out.println(ks.getClass().load());
       //  System.out.println(ks.engineSize());
     }
 }

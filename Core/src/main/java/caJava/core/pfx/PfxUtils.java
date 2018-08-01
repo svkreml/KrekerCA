@@ -26,7 +26,7 @@ public class PfxUtils {
 
             logger.info("Ключей в контейнере: "+ks.engineSize());
             Enumeration enumeration = ks.engineAliases();
-            //ks.get
+            //ks.load
             while (enumeration.hasMoreElements()) {
                 Object nextElement = enumeration.nextElement();
                 logger.info("Алиас: "+nextElement);

@@ -34,21 +34,27 @@ public class SubjectMap {
         x500NameBld.addRDN(BCStyle.SURNAME, "Иванов");
         x500NameBld.addRDN(BCStyle.CN, "НИИ \"Крекер\"");
         File file = new File("subject.json");
-        SubjectMap.set(x500NameBld.build(), file);
-        X500Name name =  SubjectMap.get(file);
+        SubjectMap.save(x500NameBld.build(), file);
+        X500Name name = SubjectMap.load(file);
         System.out.println(name);
     }
 
-    public static X500Name get(File file) throws IOException {
-        X500NameBuilder x500NameBld = new X500NameBuilder(CustomBCStyle.INSTANCE);
+    public static X500Name load(File file) throws IOException {
+        X500NameBuilder x500NameBld = new X500NameBuilder(BCStyle.INSTANCE);
         Map<String, String> map = (Map<String, String>) Json.readValue(LinkedHashMap.class, file);
-        map.forEach((String oid, String value) ->{
-            x500NameBld.addRDN((ASN1ObjectIdentifier) CustomBCStyle.DefaultLookUp.get(oid.toLowerCase()),value);
+        map.forEach((String oid, String value) -> {
+            x500NameBld.addRDN((ASN1ObjectIdentifier) CustomBCStyle.DefaultLookUp.get(oid.toLowerCase()), value);
         });
         return x500NameBld.build();
     }
-
-    public static void set(X500Name x500Name,File file) throws IOException {
+    public static X500Name convert(Map<String, String> x500) {
+        X500NameBuilder x500NameBld = new X500NameBuilder(BCStyle.INSTANCE);
+        x500.forEach((String oid, String value) -> {
+            x500NameBld.addRDN((ASN1ObjectIdentifier) CustomBCStyle.DefaultLookUp.get(oid.toLowerCase()), value);
+        });
+        return x500NameBld.build();
+    }
+    public static Map<String, String> convert(X500Name x500Name) {
         Map<String, String> map = new LinkedHashMap<>();
         RDN[] rdNs = x500Name.getRDNs();
         for (RDN rdN : rdNs) {
@@ -56,7 +62,18 @@ public class SubjectMap {
             //System.out.println(rdN.getFirst().getValue());
             map.put(CustomBCStyle.DefaultSymbols.get(new ASN1ObjectIdentifier(rdN.getFirst().getType().toString()).intern()).toString(), rdN.getFirst().getValue().toString());
         }
-        System.out.println(map);
-        Json.write(map,file);
+        return map;
+    }
+
+    public static void save(X500Name x500Name, File file) throws IOException {
+        Map<String, String> map = new LinkedHashMap<>();
+        RDN[] rdNs = x500Name.getRDNs();
+        for (RDN rdN : rdNs) {
+            //System.out.print(rdN.getFirst().getType()+"  ");
+            //System.out.println(rdN.getFirst().getValue());
+            map.put(CustomBCStyle.DefaultSymbols.get(new ASN1ObjectIdentifier(rdN.getFirst().getType().toString()).intern()).toString(), rdN.getFirst().getValue().toString());
+        }
+        //System.out.println(map);
+        Json.write(map, file);
     }
 }

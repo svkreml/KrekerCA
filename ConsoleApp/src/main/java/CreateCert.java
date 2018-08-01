@@ -74,12 +74,12 @@ public class CreateCert {
             byte[] bytes = FileManager.read(ca);
             X509Certificate caCert = CertEnveloper.decodeCert(bytes);
             PrivateKey privateKey = CertEnveloper.decodePrivateKey(caPkey);
-            certAndKey = certificateCreator.generateCertificate(SubjectMap.get(subject), ExtensionsMap.getVector(extensions),
+            certAndKey = certificateCreator.generateCertificate(SubjectMap.load(subject), ExtensionsMap.getVector(extensions),
                     BigInteger.valueOf(new Random().nextLong()), startDate, endDate, caCert, privateKey);
         }
 
             else
-            certAndKey = certificateCreator.generateCertificate(SubjectMap.get(subject), ExtensionsMap.getVector(extensions),  BigInteger.valueOf(new Random().nextLong()), startDate, endDate);
+            certAndKey = certificateCreator.generateCertificate(SubjectMap.load(subject), ExtensionsMap.getVector(extensions),  BigInteger.valueOf(new Random().nextLong()), startDate, endDate);
 
 
         //fixme сохранять pfx и имя файла из параметра
