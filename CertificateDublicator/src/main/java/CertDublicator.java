@@ -1,6 +1,7 @@
 import caJava.core.CertAndKey;
 import caJava.core.creator.CertificateCreator;
 import caJava.core.cryptoAlg.CryptoAlg;
+import caJava.core.cryptoAlg.CryptoAlgFactory;
 import caJava.core.cryptoAlg.impl.CryptoAlgGost2001;
 import caJava.core.cryptoAlg.impl.CryptoAlgGost2012_256;
 import caJava.core.extensions.CertBuildContainer;
@@ -91,10 +92,7 @@ public class CertDublicator {
             System.out.printf("%25s = %120s\n", s, fromHex(extOctetString.getLoadedObject().toString()));
             nonCopybleExtensions(buildContainer, s, extensionValue, false);
         }
-
-
     }
-
     private static void nonCopybleExtensions(CertBuildContainer buildContainer, String s, byte[] extensionValue, boolean b) throws IOException {
         switch (s) {
             case "2.5.29.16":
@@ -109,30 +107,43 @@ public class CertDublicator {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-
-
+    public static CertAndKey generateDublicate( String donorFileName) throws Exception {
+        return CertDublicator.generateDublicate(true, "", "", donorFileName);
+    }
+    public static CertAndKey generateDublicate(  String caFileName, String caPrivateKeyFileName,String donorFileName) throws Exception {
+        return CertDublicator.generateDublicate(false, caFileName, caPrivateKeyFileName, donorFileName);
     }
 
-    public static CertAndKey generateDublicate(boolean isCa, String caFileName, String caPrivateKeyFileName, String donorFileName) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException, OperatorCreationException, CertificateException {
+    public static CertAndKey generateDublicate(boolean isCa, String caFileName, String caPrivateKeyFileName, String donorFileName) throws Exception {
         X509Certificate donorCert = CertEnveloper.decodeCert(FileManager.read(new File(donorFileName)));
         Map<String, String> x500donorSubjectName = parseCertName(donorCert);
         X500Name subject = SubjectMap.convert(x500donorSubjectName);
         // X500Name subject = getName(donorCert);
         X509Certificate ca = null;
         PrivateKey privateKeyCa = null;
-        if (!isCa) {
-            ca = CertEnveloper.decodeCert(FileManager.read(new File(caFileName)));
-            privateKeyCa = CertEnveloper.decodePrivateKey(new File(caPrivateKeyFileName));
-        }
+        // create keypair
         Security.addProvider(new BouncyCastleProvider());
-        CryptoAlg cryptoAlg = CryptoAlgGost2001.getCryptoAlg();
+        CryptoAlg cryptoAlg = CryptoAlgFactory.getInstance(donorCert.getSigAlgOID());
 
         SecureRandom random = new SecureRandom();
-// create keypair
         KeyPairGenerator keypairGen = KeyPairGenerator.getInstance(cryptoAlg.algorithm, cryptoAlg.cryptoProvider);
         keypairGen.initialize(new ECGenParameterSpec(cryptoAlg.ellipticCurve));
         KeyPair keypair = keypairGen.generateKeyPair();
+
+        if(isCa){
+            privateKeyCa = keypair.getPrivate();
+        }
+        else {
+            ca = CertEnveloper.decodeCert(FileManager.read(new File(caFileName)));
+            privateKeyCa = CertEnveloper.decodePrivateKey(new File(caPrivateKeyFileName));
+        }
+
+
+
+
+
+
+
 // fill in certificate fields
         // X500NameBuilder x500NameBld = new X500NameBuilder(BCStyle.INSTANCE);
         //getName(donorCert, new File("C:\\Users\\s.kremlev\\Desktop\\expired\\TEST_LPOLKINA.name.json"));
@@ -159,25 +170,28 @@ public class CertDublicator {
                 endDate,
                 subject,
                 keypair.getPublic());
-// build BouncyCastle certificate
+/*// build BouncyCastle certificate
         ContentSigner signer = null;
         if (isCa)
             signer = new JcaContentSignerBuilder(cryptoAlg.signatureAlgorithm).build(keypair.getPrivate());
         else
-            signer = new JcaContentSignerBuilder(cryptoAlg.signatureAlgorithm).build(privateKeyCa);
-        X509CertificateHolder holder = x509v3CertificateBuilder.build(signer);
+            signer = new JcaContentSignerBuilder(cryptoAlg.signatureAlgorithm).build(privateKeyCa);*/
 
-        CertificateCreator certificateCreator = new CertificateCreator(CryptoAlgGost2012_256.getCryptoAlg());
-        certificateCreator.generateCertificate(subject,extensionsHashMap,serial,startDate,endDate,ca,privateKeyCa);
+        CertificateCreator certificateCreator = new CertificateCreator(cryptoAlg);
 
+
+        CertBuildContainer buildContainer = new CertBuildContainer(x509v3CertificateBuilder, keypair, ca, startDate, endDate);
+        parseCertExtensions(donorCert, buildContainer);
+
+        CertAndKey certAndKey = certificateCreator.buildCertificate(privateKeyCa, keypair, buildContainer.getX509v3CertificateBuilder());
 
 
 // convert to JRE certificate
-        JcaX509CertificateConverter converter = new JcaX509CertificateConverter();
-        converter.setProvider(new BouncyCastleProvider());
-        X509Certificate x509 = converter.getCertificate(holder);
+        //JcaX509CertificateConverter converter = new JcaX509CertificateConverter();
+        //converter.setProvider(new BouncyCastleProvider());
+        //X509Certificate x509 = converter.getCertificate(holder);
 
-        return new CertAndKey(keypair, x509);
+        return certAndKey;
     }
 
     public static void saveToDer(KeyPair keypair, byte[] serialized, String file) throws IOException {

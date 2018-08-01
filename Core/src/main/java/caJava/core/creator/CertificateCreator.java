@@ -121,7 +121,7 @@ public class CertificateCreator {
         return buildCertificate(caPKey, keypair, x509v3CertificateBuilder);
     }
 
-    private CertAndKey buildCertificate(PrivateKey caPKey, KeyPair keypair, X509v3CertificateBuilder x509v3CertificateBuilder) throws OperatorCreationException, CertificateException {
+    public CertAndKey buildCertificate(PrivateKey caPKey, KeyPair keypair, X509v3CertificateBuilder x509v3CertificateBuilder) throws OperatorCreationException, CertificateException {
         ContentSigner signer = new JcaContentSignerBuilder(cryptoAlg.signatureAlgorithm).build(caPKey);
         X509CertificateHolder holder = x509v3CertificateBuilder.build(signer);
 
