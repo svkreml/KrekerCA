@@ -9,13 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>JavaFxGui</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>OSCP</module>
-        <module>HashCalculator</module>
-        <module>Base64EncoderDecoder</module>
-    </modules>
+    <artifactId>CertificateDublicator</artifactId>
     <dependencies>
         <dependency>
             <groupId>ByMe</groupId>

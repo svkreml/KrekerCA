@@ -20,7 +20,7 @@ public class TestRun {
     @Test
     public void createCa(){
         String[] args = {"-run", "createCert", "-subject", "subjectCa.json", "-extensions", "file", "-extensions",
-                "extensionsCa.json", "-outputDer", "test.der", "-pass", "123456", "-alg", "rsa4096","-dateFrom","2012-12-24","-dateTo","2024-12-24"};
+                "extensionsCa.json", "-outputDer", "gost2001Ca.der", "-pass", "123456", "-alg", "gost2001","-dateFrom","2012-12-24","-dateTo","2024-12-24"};
         try {
             Main.main(args);
             assert true;
@@ -33,7 +33,21 @@ public class TestRun {
     public void createCert(){
         String[] args = {"-run", "createCert", "-subject", "subject.json", "-extensions", "file", "-extensions", "extensions.json", "-outputDer",
                 "testSub.der", "-pass", "123456", "-alg", "rsa2048","-dateFrom","2012-12-24","-dateTo","2024-12-24",
-                "-ca","-caFile", "test.der","-caPKey","test.der.pkey"};
+                "-ca","-caFile", "gost2001Ca.der","-caPKey","gost2001Ca.der.pkey"};
+        try {
+            Main.main(args);
+            assert true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert false;
+        }
+    }
+
+    @Test
+    public void createCertPfx(){
+        String[] args = {"-run", "createCert", "-subject", "subject.json", "-extensions", "file", "-extensions", "extensions.json", "-outputDer",
+                "testSub.der", "-pass", "123456", "-alg", "rsa2048","-dateFrom","2012-12-24","-dateTo","2024-12-24",
+                "-ca","-caFile", "gost2001Ca.der","-caPKey","gost2001Ca.der.pkey","-pfx", "data.pfx"};
         try {
             Main.main(args);
             assert true;
@@ -45,8 +59,21 @@ public class TestRun {
     @Test
     public void createCertOcsp(){
         String[] args = {"-run", "createCert", "-subject", "subject.json", "-extensions", "file", "-extensions", "extensionsOCSP.json", "-outputDer",
+                "testSubOCSP2.der", "-pass", "123456", "-alg", "rsa2048","-dateFrom","2012-12-24","-dateTo","2024-12-24",
+                "-ca","-caFile", "Ca.der","-caPKey","Ca.der.pkey"};
+        try {
+            Main.main(args);
+            assert true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert false;
+        }
+    }
+    @Test
+    public void createCertOcspAnother(){
+        String[] args = {"-run", "createCert", "-subject", "subject.json", "-extensions", "file", "-extensions", "extensionsOCSP.json", "-outputDer",
                 "testSubOCSP.der", "-pass", "123456", "-alg", "rsa2048","-dateFrom","2012-12-24","-dateTo","2024-12-24",
-                "-ca","-caFile", "test.der","-caPKey","test.der.pkey"};
+                "-ca","-caFile", "gost2001Ca.der","-caPKey","gost2001Ca.der.pkey"};
         try {
             Main.main(args);
             assert true;

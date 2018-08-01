@@ -26,7 +26,7 @@ To:
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.59</version>
+            <version>1.60</version>
         </dependency>       
 (For this, some changes have occurred in the code)
 

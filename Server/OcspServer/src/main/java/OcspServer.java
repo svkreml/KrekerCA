@@ -1,68 +1,155 @@
+import caJava.core.BcInit;
+import caJava.fileManagement.CertEnveloper;
+import caJava.fileManagement.FileManager;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ocsp.OCSPObjectIdentifiers;
 import org.bouncycastle.asn1.x509.*;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.ocsp.*;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.DigestCalculator;
 import org.bouncycastle.operator.DigestCalculatorProvider;
 import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.operator.bc.BcDigestCalculatorProvider;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
-public class OcspServer {
+public class OcspServer extends HttpServlet {
 
-    private OCSPResp generateOCSPResponse(OCSPReq request, PrivateKey ocspPrivateKey, PublicKey ocspPublicKey,
-                                          CertificateID[] revokedIDs) throws NoSuchProviderException, OCSPException, IOException, OperatorCreationException {
-        ASN1InputStream aIn = new ASN1InputStream(ocspPublicKey.getEncoded());
-        SubjectPublicKeyInfo info = SubjectPublicKeyInfo.getInstance(aIn.readObject());
-        AlgorithmIdentifier algorithmIdentifier = info.getAlgorithm();
 
-        SubjectPublicKeyInfo subjectPublicKeyInfo = new SubjectPublicKeyInfo(algorithmIdentifier, ocspPublicKey.getEncoded());
+    static List<RevokedCertificate> revokedCertificates;
 
-        JcaDigestCalculatorProviderBuilder digestCalculatorProviderBuilder = new JcaDigestCalculatorProviderBuilder();
-        DigestCalculatorProvider digestCalculatorProvider = digestCalculatorProviderBuilder.build();
+    static {
+        BcInit.init();
 
-        DigestCalculator digestCalculator = digestCalculatorProvider.get(CertificateID.HASH_SHA1);
+        RevokationListBuilder revokationListBuilder = new RevokationListBuilder();
+        revokedCertificates = revokationListBuilder.getTestList();
+    }
 
-        BasicOCSPRespBuilder basicOCSPRespGenerator = new BasicOCSPRespBuilder(subjectPublicKeyInfo, digestCalculator);
+    public static OCSPResp generateOCSPResponse(OCSPReq request, PrivateKey ocspPrivateKey, X509Certificate ocspCert) throws NoSuchProviderException, OCSPException, IOException, OperatorCreationException, CertificateEncodingException {
 
-        Extension extension = request.getExtension(OCSPObjectIdentifiers.id_pkix_ocsp_nonce);
-        if (extension != null) {
-            ExtensionsGenerator extGen = new ExtensionsGenerator();
-            extGen.addExtension(OCSPObjectIdentifiers.id_pkix_ocsp_nonce, false, extension);
-            basicOCSPRespGenerator.setResponseExtensions(extGen.generate());
+
+        BasicOCSPRespBuilder basicOCSPRespBuilder = getBasicOCSPRespBuilder(ocspCert);
+
+        ContentSigner signer = new JcaContentSignerBuilder("SHA1withRSA").setProvider(BouncyCastleProvider.PROVIDER_NAME).build(ocspPrivateKey);
+        X509CertificateHolder[] chain = getCertChain();
+        BasicOCSPResp basicResp = getBasicOCSPRespBuilder(ocspCert).build(signer, chain, new Date());
+        OCSPRespBuilder respGen = new OCSPRespBuilder();
+
+       //перекладываем  nonce, падаем если её нету
+        try {
+            putNonceFromRequestToResponce(request, basicOCSPRespBuilder);
+        } catch (NullPointerException e) {
+            return respGen.build(OCSPRespBuilder.MALFORMED_REQUEST, basicResp);
         }
+        // смотрим все запросы
+        iterateOcspRequests(basicOCSPRespBuilder, request.getRequestList());
 
-        Req[] requests = request.getRequestList();
 
+
+        BasicOCSPResp basicOCSPResp = basicOCSPRespBuilder.build(signer, chain, Calendar.getInstance().getTime() );
+        return respGen.build(OCSPRespBuilder.SUCCESSFUL, basicOCSPResp);
+        //return respGen.build(OCSPRespBuilder.SUCCESSFUL, basicOCSPRespBuilder);
+    }
+
+    private static void putNonceFromRequestToResponce(OCSPReq request, BasicOCSPRespBuilder basicOCSPRespGenerator) throws IOException {
+        Extension extension = request.getExtension(OCSPObjectIdentifiers.id_pkix_ocsp_nonce);//"1.3.6.1.5.5.7.48.1.2"
+        if(extension == null) throw new NullPointerException("ocsp_nonce должен быть");
+        ExtensionsGenerator extGen = new ExtensionsGenerator();
+        extGen.addExtension(OCSPObjectIdentifiers.id_pkix_ocsp_nonce, false, extension);
+        basicOCSPRespGenerator.setResponseExtensions(extGen.generate());
+    }
+
+    private static void iterateOcspRequests(BasicOCSPRespBuilder basicOCSPRespGenerator, Req[] requests) throws OCSPException, IOException, CertificateEncodingException {
+        goToNextRequest:
         for (Req req : requests) {
-            boolean revoked = false;
             CertificateID certID = req.getCertID();
-            for (CertificateID revokedID : revokedIDs) {
-                if (certID.equals(revokedID)){
-                    revoked = true;
+
+
+            if(!certID.matchesIssuer(new X509CertificateHolder(caCert.getEncoded()), new BcDigestCalculatorProvider())){
+                basicOCSPRespGenerator.addResponse(certID, new UnknownStatus());
+                continue goToNextRequest;
+            }
+
+            for (RevokedCertificate revokedCertificate : revokedCertificates) {
+                {
+                    if (certID.equals(revokedCertificate.getCertificateID())) {
+                        Date nextUpdate = new Date(new Date().getTime() + 10_000_000);
+                        basicOCSPRespGenerator.addResponse(certID, revokedCertificate.getRevokedStatus(), new Date(), nextUpdate);
+                        continue goToNextRequest;
+                    }
                 }
             }
-            if (revoked) {
-                RevokedStatus revokedStatus = new RevokedStatus(new Date(), CRLReason.privilegeWithdrawn);
-                Date nextUpdate = new Date(new Date().getTime() + 10_000_000);
-                basicOCSPRespGenerator.addResponse(certID, revokedStatus, new Date(), nextUpdate);
-                break;
-            } else {
-                basicOCSPRespGenerator.addResponse(certID, CertificateStatus.GOOD);
-            }
+            basicOCSPRespGenerator.addResponse(certID, CertificateStatus.GOOD);
         }
-        // build BouncyCastle certificate
-        ContentSigner signer = new JcaContentSignerBuilder("SHA1withRSA").setProvider(BouncyCastleProvider.PROVIDER_NAME).build(ocspPrivateKey);
-        BasicOCSPResp basicResp = basicOCSPRespGenerator.build(signer, null, new Date());
-        OCSPRespBuilder respGen = new OCSPRespBuilder();
-        return respGen.build(OCSPRespBuilder.SUCCESSFUL, basicResp);
+    }
+
+    private static X509CertificateHolder[] getCertChain() throws IOException, CertificateEncodingException {
+        X509CertificateHolder[] chain = new X509CertificateHolder[1];
+        chain[0] = new X509CertificateHolder(caCert.getEncoded());
+        return chain;
+    }
+
+    private static BasicOCSPRespBuilder getBasicOCSPRespBuilder(X509Certificate ocspCert) throws IOException, OperatorCreationException, OCSPException {
+        ASN1InputStream aIn = new ASN1InputStream(ocspCert.getPublicKey().getEncoded());
+        SubjectPublicKeyInfo info = SubjectPublicKeyInfo.getInstance(aIn.readObject());
+        AlgorithmIdentifier algorithmIdentifier = info.getAlgorithm();
+        SubjectPublicKeyInfo subjectPublicKeyInfo = new SubjectPublicKeyInfo(algorithmIdentifier, ocspCert.getPublicKey().getEncoded());
+
+        //создание digestCalculator
+        JcaDigestCalculatorProviderBuilder digestCalculatorProviderBuilder = new JcaDigestCalculatorProviderBuilder();
+        DigestCalculatorProvider digestCalculatorProvider = digestCalculatorProviderBuilder.build();
+        DigestCalculator digestCalculator = digestCalculatorProvider.get(CertificateID.HASH_SHA1);
+
+
+        return new BasicOCSPRespBuilder(subjectPublicKeyInfo, digestCalculator);
+    }
+  static   X509Certificate caCert;
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            InputStream inputStream = request.getInputStream();
+            int available = inputStream.available();
+            byte[] bytes = new byte[available];
+            inputStream.read(bytes);
+            final OCSPReq ocspReq = new OCSPReq(bytes);
+
+            response.addHeader("Content-Type", "application/ocsp-request");
+            response.addHeader("Accept", "application/ocsp-response");
+
+            //read OCSP certificate
+            File caFile = new File("Server/OcspServer/ca.der");
+            bytes = FileManager.read(caFile);
+           caCert = CertEnveloper.decodeCert(bytes);
+            File pkeyFile = new File("Server/OcspServer/ca.der.pkey");
+
+
+
+            OCSPResp ocspResp = generateOCSPResponse(ocspReq, CertEnveloper.decodePrivateKey(pkeyFile),  caCert);
+            OutputStream outputStream = response.getOutputStream();
+            outputStream.write(ocspResp.getEncoded());
+            outputStream.flush();
+            outputStream.close();
+        } catch (NoSuchProviderException | OCSPException | OperatorCreationException | CertificateEncodingException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -5,10 +5,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import org.apache.synapse.transport.certificatevalidation.ocsp.OCSPVerifier;
-import org.bouncycastle.asn1.x509.AuthorityKeyIdentifier;
+import org.bouncycastle.asn1.x509.CRLReason;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.ocsp.*;
-import sun.security.x509.AuthorityKeyIdentifierExtension;
 import sun.security.x509.SerialNumber;
 import sun.security.x509.X509CertImpl;
 
@@ -36,8 +35,7 @@ public class OcspClientView {
     @FXML
     public TextArea responseTextArea;
     @FXML
-    public TextField crlServerTextField
-            ;
+    public TextField crlServerTextField;
     String ocspTempLocation = null;
 
     private static X509Certificate getCertFromFile(String path) {
@@ -62,13 +60,13 @@ public class OcspClientView {
 
     @FXML
     public void fileChooseUserCert() throws Exception {
-        fileChooser("Выбор сертификата для проверки", userCertTextField);
+        userCertTextField.setText(JavaFxUtils.fileChooser("Выбор сертификата для проверки").getAbsolutePath());
         tryToOcspButton();
     }
 
     @FXML
     public void fileChooseCaCert() {
-        fileChooser("Выбор сертификата УЦ для проверки", caCertTextField);
+        caCertTextField.setText(JavaFxUtils.fileChooser("Выбор сертификата УЦ для проверки").getAbsolutePath());
     }
 
     private void fileChooser(String s, TextField caCertTextField) {
@@ -93,7 +91,7 @@ public class OcspClientView {
         keystore.load(null, null);
 
         X509Certificate userCert = getCertFromFile(userCertTextField.getText());
-        SerialNumber serialNumberCa = (SerialNumber)((X509CertImpl) userCert).getAuthorityKeyIdentifierExtension().get("serial_number");
+        SerialNumber serialNumberCa = (SerialNumber) ((X509CertImpl) userCert).getAuthorityKeyIdentifierExtension().get("serial_number");
 
         String certificateAlias = keystore.getCertificateAlias(userCert);
         Certificate[] certificateChain = keystore.getCertificateChain(certificateAlias);
@@ -103,7 +101,7 @@ public class OcspClientView {
             String sAlias = (String) oEnum.nextElement();
             X509Certificate keystoreCertificate = (X509Certificate) keystore.getCertificate(sAlias);
             SerialNumber serialNumber = ((X509CertImpl) keystoreCertificate).getSerialNumberObject();
-            if(serialNumberCa.getNumber().equals(serialNumber.getNumber())){
+            if (serialNumberCa.getNumber().equals(serialNumber.getNumber())) {
                 try {
                     userCert.verify(keystoreCertificate.getPublicKey());
                 } catch (CertificateException | NoSuchAlgorithmException | InvalidKeyException | NoSuchProviderException | SignatureException e) {
@@ -146,6 +144,7 @@ public class OcspClientView {
 
     @FXML
     public void runOcspButton() throws Exception {
+        responseTextArea.clear();
         //Add BouncyCastle as Security Provider.
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 
@@ -153,13 +152,14 @@ public class OcspClientView {
         X509Certificate caCert = getCertFromFile(caCertTextField.getText());
 
         //Create OCSP request to check if certificate with "serialNumber == revokedSerialNumber" is revoked.
-        OCSPReq request = getOCSPRequest(caCert, userCert.getSerialNumber());
+        X509CertificateHolder userCertHolder = new X509CertificateHolder(userCert.getEncoded());
+        OCSPReq request = getOCSPRequest(caCert, userCertHolder.getSerialNumber());
 
 
         final byte[] array = request.getEncoded();
 
         HttpURLConnection con = null;
-        if(ocspServerTextField.getText().length()<5)
+        if (ocspServerTextField.getText().length() < 5)
             tryToOcspButton();
         final URL url = new URL(ocspServerTextField.getText());
         con = (HttpURLConnection) url.openConnection();
@@ -182,6 +182,10 @@ public class OcspClientView {
         final OCSPResp ocspResponse = new OCSPResp(in);
         final BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResponse
                 .getResponseObject();
+        if (basicResponse.getResponses().length < 1) {
+            responseTextArea.setText("ERROR");
+            return;
+        }
 
         SingleResp singleResp = basicResponse.getResponses()[0];
         Object status = singleResp.getCertStatus();
@@ -190,9 +194,9 @@ public class OcspClientView {
         else if (status instanceof UnknownStatus)
             responseTextArea.setText("UnknownStatus");
         else if (status instanceof RevokedStatus) {
-            responseTextArea.setText(
+            responseTextArea.setText("RevokedStatus\n" +
                     ((RevokedStatus) status).getRevocationTime() + "\n" +
-                            ((RevokedStatus) status).getRevocationReason());
+                    CRLReason.lookup(((RevokedStatus) status).getRevocationReason()));
         }
         X509CertificateHolder x509CertificateHolder = basicResponse.getCerts()[0];
 
@@ -217,6 +221,7 @@ public class OcspClientView {
     public void tryToCrlButton(ActionEvent actionEvent) {
 
     }
+
     @FXML
     public void runCrlButton(ActionEvent actionEvent) {
 

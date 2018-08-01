@@ -87,7 +87,7 @@ public class CertificateCreatorTests {
 
         CertificateCreator certificateCreator = new CertificateCreator(CryptoAlgGost2001.getCryptoAlg());
 
-        X500NameBuilder x500NameBld = new X500NameBuilder(BCStyle.INSTANCE);
+        X500NameBuilder x500NameBld = new X500NameBuilder(CustomBCStyle.INSTANCE);
         x500NameBld.addRDN(CustomBCStyle.СНИЛС, new DERNumericString("0012345678"));
         x500NameBld.addRDN(CustomBCStyle.ОГРН, new DERNumericString("0012345678"));
         x500NameBld.addRDN(CustomBCStyle.ИНН, new DERNumericString("0012345678"));
