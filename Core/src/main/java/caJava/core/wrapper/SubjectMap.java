@@ -39,6 +39,7 @@ public class SubjectMap {
         System.out.println(name);
     }
 
+
     public static X500Name load(File file) throws IOException {
         X500NameBuilder x500NameBld = new X500NameBuilder(BCStyle.INSTANCE);
         Map<String, String> map = (Map<String, String>) Json.readValue(LinkedHashMap.class, file);
