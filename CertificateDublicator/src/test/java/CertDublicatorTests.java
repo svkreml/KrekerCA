@@ -13,7 +13,6 @@ public class CertDublicatorTests {
     @Test
     public void testSub() throws Exception {
         MeUtils.loadBC();
-        boolean isCa = false;
         String caCert = "../ConsoleApp/exampleKeys/gost2001Ca.der";
         String caPrivateKey = "../ConsoleApp/exampleKeys/gost2001Ca.der.pkey";
         String donorCertificate = "ocsp.der";
@@ -25,7 +24,6 @@ public class CertDublicatorTests {
     @Test
     public void testCa() throws Exception {
         MeUtils.loadBC();
-        boolean isCa = true;
         //String caCert = "../ConsoleApp/exampleKeys/gost2001Ca.der";
        // String caPrivateKey = "../ConsoleApp/exampleKeys/gost2001Ca.der.pkey";
         String donorCertificate = "../ConsoleApp/exampleKeys/gost2001Ca.der";
