@@ -2,7 +2,6 @@ package caJava.core.extensions;
 
 import caJava.customOID.CustomExtension;
 import org.bouncycastle.asn1.*;
-import org.bouncycastle.asn1.ocsp.OCSPObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.cert.CertIOException;
@@ -11,12 +10,45 @@ import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import javax.security.auth.x500.X500Principal;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.function.BiFunction;
 
 public class ExtensionsHashMap extends HashMap<String, BiFunction<CertBuildContainer, String[], Boolean>> {
     public ExtensionsHashMap() {
 
+        /*2.5.29.16 Идентификатор ключа субъекта -- Открытый ключ субъекта*/
+        put("privateKeyUsagePeriod", ((certBuildContainer, params) -> {
+            try {
+                Date from;
+                Date to;
+                if (params == null || params.length < 1)
+                    params = new String[]{"false"};
+                if(params.length<3){
+                    from = certBuildContainer.getFrom();
+                    to =certBuildContainer.getTo();
+                }else {
+                    from = new Date(Long.valueOf(params[1]));
+                    to = new Date(Long.valueOf(params[2]));
+                }
+                ASN1EncodableVector v = new ASN1EncodableVector();
+                DERGeneralizedTime fromTime = new DERGeneralizedTime(from);
+                v.add(new DERTaggedObject(false, 0, fromTime));
+
+                DERGeneralizedTime toTime = new DERGeneralizedTime(to);
+                v.add(new DERTaggedObject(false, 1, toTime));
+
+                PrivateKeyUsagePeriod pkup = PrivateKeyUsagePeriod.getInstance(new DERSequence(v));
+
+                certBuildContainer.getX509v3CertificateBuilder().addExtension(Extension.privateKeyUsagePeriod,
+                        Boolean.valueOf(params[0]), pkup);
+                return true;
+
+            } catch (CertIOException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }));
 
         /*2.5.29.14 Идентификатор ключа субъекта -- Открытый ключ субъекта*/
         put("subjectKeyIdentifier", ((certBuildContainer, params) -> {
@@ -32,6 +64,7 @@ public class ExtensionsHashMap extends HashMap<String, BiFunction<CertBuildConta
             }
             return false;
         }));
+
         /*Основные ограничения	2.5.29.19*/
         put("basicConstraints", ((certBuildContainer, params) -> {
             try {
@@ -131,7 +164,7 @@ public class ExtensionsHashMap extends HashMap<String, BiFunction<CertBuildConta
             try {
                 //if (s instanceof String[]) {
                 if (params.length == 2) {
-                    KeyUsage usage = new KeyUsage(Integer.parseInt(params[1],16));
+                    KeyUsage usage = new KeyUsage(Integer.parseInt(params[1], 16));
                     certBuildContainer.getX509v3CertificateBuilder().addExtension(Extension.keyUsage, Boolean.valueOf(params[0]), usage.getEncoded());
                     return true;
                 }
@@ -169,8 +202,8 @@ public class ExtensionsHashMap extends HashMap<String, BiFunction<CertBuildConta
             try {
                 if (params.length == 3) {
                     ASN1EncodableVector vec = new ASN1EncodableVector();
-                    vec.add(new AccessDescription(AccessDescription.id_ad_ocsp, new GeneralName(GeneralName.uniformResourceIdentifier,params[1])));
-                    vec.add(new AccessDescription(AccessDescription.id_ad_caIssuers, new GeneralName(GeneralName.uniformResourceIdentifier,params[2])));
+                    vec.add(new AccessDescription(AccessDescription.id_ad_ocsp, new GeneralName(GeneralName.uniformResourceIdentifier, params[1])));
+                    vec.add(new AccessDescription(AccessDescription.id_ad_caIssuers, new GeneralName(GeneralName.uniformResourceIdentifier, params[2])));
                     AuthorityInformationAccess authorityInformationAccess = AuthorityInformationAccess.getInstance(new DERSequence(vec));
                     certBuildContainer.getX509v3CertificateBuilder().addExtension(Extension.authorityInfoAccess, Boolean.valueOf(params[0]), authorityInformationAccess);
                     return true;
@@ -185,10 +218,10 @@ public class ExtensionsHashMap extends HashMap<String, BiFunction<CertBuildConta
             //  if (ca == null) return false; //корневому сертификату это не нужно
             try {
                 if (params.length == 1) {
-                    if(certBuildContainer.getCaCert()==null) {
+                    if (certBuildContainer.getCaCert() == null) {
                         throw new NullPointerException("Если есть authorityKeyIdentifier, то должен быть УЦ");
                     }
-                        GeneralName generalName = new GeneralName(new X500Name(certBuildContainer.getCaCert().getSubjectX500Principal().getName(X500Principal.RFC2253)));
+                    GeneralName generalName = new GeneralName(new X500Name(certBuildContainer.getCaCert().getSubjectX500Principal().getName(X500Principal.RFC2253)));
 
                     GeneralNames generalNames = new GeneralNames(generalName);
 
@@ -219,6 +252,5 @@ public class ExtensionsHashMap extends HashMap<String, BiFunction<CertBuildConta
             }
             return false;
         }));
-
     }
 }

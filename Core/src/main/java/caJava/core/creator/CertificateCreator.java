@@ -97,7 +97,6 @@ public class CertificateCreator {
             issuer = new X500Name(ca.getSubjectX500Principal().getName(X500Principal.RFC2253));
         else {
             issuer = subject;
-
         }
         //Создание заготовки под сертификат
         X509v3CertificateBuilder x509v3CertificateBuilder = new JcaX509v3CertificateBuilder(
