@@ -6,6 +6,7 @@ import caJava.core.cryptoAlg.impl.CryptoAlgGost2001;
 import caJava.fileManagement.CertEnveloper;
 import caJava.fileManagement.FileManager;
 import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x509.AuthorityKeyIdentifier;
 import org.bouncycastle.asn1.x509.CRLNumber;
 import org.bouncycastle.asn1.x509.CRLReason;
 import org.bouncycastle.asn1.x509.Extension;
@@ -51,7 +52,7 @@ public class CreateRevocationList {
         );
         builder.setNextUpdate(Date.from(LocalDate.of(2018, 3, 15).atStartOfDay(ZoneOffset.UTC).toInstant()));
 
-        builder.addExtension(Extension.authorityKeyIdentifier, false,  new AuthorityKeyIdentifierStructure(ca));
+        builder.addExtension(Extension.authorityKeyIdentifier, false,  AuthorityKeyIdentifier.getInstance(ca));
         builder.addExtension(Extension.cRLNumber, false, new CRLNumber(BigInteger.valueOf(1)));
 
 

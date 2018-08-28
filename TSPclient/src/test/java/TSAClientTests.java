@@ -8,7 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.security.MessageDigest;
-
+import java.util.UUID;
 
 
 public class TSAClientTests {
@@ -17,7 +17,7 @@ public class TSAClientTests {
     @Test
     public void getSha256TimeStamp() throws IOException {
         MessageDigest digest = new SHA256.Digest();
-        TSAClient tsaClient = new TSAClient(new URL("http://ep.uat.guc.voskhod.ru:8882/tsp/tsp.srf"), "", "", digest);
+        TSAClient tsaClient = new TSAClient(new URL("http://testguc/TSP/tsp.srf"), "", "", digest);
 
         String originalMessage = "Hello World!";
         digest.digest(TSAClient.hexStringToByteArray(originalMessage));
@@ -34,7 +34,7 @@ public class TSAClientTests {
     @Test      //MessageDigest digest = new GOST3411.Digest2012_256();
     public void getGost2001TimeStamp() throws IOException {
         MessageDigest digest = new GOST3411.Digest();
-        TSAClient tsaClient = new TSAClient(new URL("http://ep.uat.guc.voskhod.ru:8882/tsp/tsp.srf"), "", "", digest);
+        TSAClient tsaClient = new TSAClient(new URL("http://testguc/TSP/tsp.srf"), "", "", digest);
 
         String originalMessage = "Hello World!";
         digest.digest(TSAClient.hexStringToByteArray(originalMessage));
@@ -52,9 +52,9 @@ public class TSAClientTests {
     @Test
     public void getGost2012_256TimeStamp() throws IOException {
         MessageDigest digest = new GOST3411.Digest2012_256();
-        TSAClient tsaClient = new TSAClient(new URL("http://www.cryptopro.ru/tsp/tsp.srf"), "", "", digest);
+        TSAClient tsaClient = new TSAClient(new URL("http://testguc/TSP/tsp.srf"), "", "", digest);
 
-        String originalMessage = "Hello World!";
+        String originalMessage = UUID.randomUUID().toString();
         digest.digest(TSAClient.hexStringToByteArray(originalMessage));
 
         TimeStampToken token = tsaClient.getTimeStampToken(originalMessage.getBytes());

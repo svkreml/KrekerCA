@@ -45,6 +45,7 @@ public class SaveFile extends HttpServlet {
         fileContent.read(buffer);
         File targetFile = new File("data/" + fileName);
         targetFile = targetFile.getAbsoluteFile();
+        targetFile.getParentFile().mkdirs();
         targetFile.createNewFile();
         OutputStream outStream = new FileOutputStream(targetFile);
         outStream.write(buffer);
