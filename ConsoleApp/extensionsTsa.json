@@ -1,0 +1,12 @@
+{
+  "keyUsage" : [ "false", "86" ],
+  "subjectKeyIdentifier" : [ "false" ],
+  "certificatePolicies" : [ "false", "1.2.643.100.113.1" ],
+  "subjectSignTool" : [ "false", "123123123123" ],
+  "1.3.6.1.4.1.311.21.1" : [ "false", "0" ],
+  "extendedKeyUsage" : [],
+  "authorityKeyIdentifier" : [ "false" ],
+  "cRLDistributionPoints" : [ "false", "http://localhost/revoked.crl" ],
+  "issuerSignTool" : [ "false", "123123123123", "123123123123", "123123123123", "123123123123123123" ],
+  "basicConstraints" : [ "true", "0" ]
+}
