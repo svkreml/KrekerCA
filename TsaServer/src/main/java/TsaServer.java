@@ -8,6 +8,7 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.ocsp.CertificateID;
 import org.bouncycastle.cms.DefaultSignedAttributeTableGenerator;
 import org.bouncycastle.cms.SignerInfoGenerator;
@@ -20,6 +21,9 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.tsp.*;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.bouncycastle.util.CollectionStore;
+import org.bouncycastle.util.Store;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +34,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 
@@ -123,7 +128,12 @@ public class TsaServer extends HttpServlet {
         try {
 
             DigestCalculator digestCalculator = digestCalculatorProvider.get(CertificateID.HASH_SHA1);
-            return new TimeStampTokenGenerator(signerInfoGen, digestCalculator, new ASN1ObjectIdentifier("1.2.643.2.2.38.4"));
+            TimeStampTokenGenerator timeStampTokenGenerator = new TimeStampTokenGenerator(signerInfoGen, digestCalculator, new ASN1ObjectIdentifier("1.2.643.2.2.38.4"));
+            ArrayList<X509CertificateHolder> certList = new ArrayList<>();
+            certList.add(new X509CertificateHolder(tsaCertAndKey.getCertificate().getEncoded()));
+            Store<X509CertificateHolder> store = new CollectionStore(certList);
+            timeStampTokenGenerator.addCertificates(store);
+            return timeStampTokenGenerator;
         } catch (Exception e) {
             throw new RuntimeException("Could not create timestamp token generator", e);
         }
