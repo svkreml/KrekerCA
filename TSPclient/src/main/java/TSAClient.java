@@ -262,8 +262,10 @@ public class TSAClient {
             case "GOST3411":
                 return new ASN1ObjectIdentifier(CryptoProObjectIdentifiers.gostR3411.getId());//1.2.643.2.2.9
             case "GOST3411-2012-256":
+            case "GOST3411_2012_256":
                 return new ASN1ObjectIdentifier("1.2.643.7.1.1.2.2");
             case "GOST3411-2012-512":
+            case "GOST3411_2012_512":
                 return new ASN1ObjectIdentifier("1.2.643.7.1.1.2.3");
             default:
                 return new ASN1ObjectIdentifier(algorithm);

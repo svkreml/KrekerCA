@@ -19,7 +19,7 @@ public class TSAClientTests {
         MessageDigest digest = new SHA256.Digest();
         TSAClient tsaClient = new TSAClient(new URL("http://testguc/TSP/tsp.srf"), "", "", digest);
 
-        String originalMessage = "Hello World!";
+        String originalMessage = UUID.randomUUID().toString();
         digest.digest(TSAClient.hexStringToByteArray(originalMessage));
 
         TimeStampToken token = tsaClient.getTimeStampToken(originalMessage.getBytes());
@@ -36,7 +36,7 @@ public class TSAClientTests {
         MessageDigest digest = new GOST3411.Digest();
         TSAClient tsaClient = new TSAClient(new URL("http://testguc/TSP/tsp.srf"), "", "", digest);
 
-        String originalMessage = "Hello World!";
+        String originalMessage = UUID.randomUUID().toString();
         digest.digest(TSAClient.hexStringToByteArray(originalMessage));
 
         TimeStampToken token = tsaClient.getTimeStampToken(originalMessage.getBytes());
