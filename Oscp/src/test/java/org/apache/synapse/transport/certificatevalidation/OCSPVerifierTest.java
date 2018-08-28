@@ -246,7 +246,7 @@ public class OCSPVerifierTest {
 
         ASN1InputStream aIn = new ASN1InputStream(caPublicKey.getEncoded());
         SubjectPublicKeyInfo info = SubjectPublicKeyInfo.getInstance(aIn.readObject());
-        AlgorithmIdentifier algorithmIdentifier = info.getAlgorithmId();
+        AlgorithmIdentifier algorithmIdentifier = info.getAlgorithm();
 
 
         SubjectPublicKeyInfo subjectPublicKeyInfo = new SubjectPublicKeyInfo(algorithmIdentifier, caPublicKey.getEncoded());

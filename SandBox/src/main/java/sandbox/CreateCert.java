@@ -129,6 +129,7 @@ public class CreateCert {
 
 
 // build BouncyCastle certificate
+        System.out.println(cryptoAlg.signatureAlgorithm);
         ContentSigner signer = new JcaContentSignerBuilder(cryptoAlg.signatureAlgorithm)
                 .build(keypair.getPrivate());
         X509CertificateHolder holder = certificate.build(signer);

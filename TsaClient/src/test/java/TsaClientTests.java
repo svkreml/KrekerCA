@@ -11,16 +11,16 @@ import java.security.MessageDigest;
 import java.util.UUID;
 
 
-public class TSAClientTests {
+public class TsaClientTests {
 
 
     @Test
     public void getSha256TimeStamp() throws IOException {
         MessageDigest digest = new SHA256.Digest();
-        TSAClient tsaClient = new TSAClient(new URL("http://testguc/TSP/tsp.srf"), "", "", digest);
+        TsaClient tsaClient = new TsaClient(new URL("http://testguc/TSP/tsp.srf"), "", "", digest);
 
         String originalMessage = UUID.randomUUID().toString();
-        digest.digest(TSAClient.hexStringToByteArray(originalMessage));
+        digest.digest(TsaClient.hexStringToByteArray(originalMessage));
 
         TimeStampToken token = tsaClient.getTimeStampToken(originalMessage.getBytes());
 
@@ -34,10 +34,10 @@ public class TSAClientTests {
     @Test      //MessageDigest digest = new GOST3411.Digest2012_256();
     public void getGost2001TimeStamp() throws IOException {
         MessageDigest digest = new GOST3411.Digest();
-        TSAClient tsaClient = new TSAClient(new URL("http://testguc/TSP/tsp.srf"), "", "", digest);
+        TsaClient tsaClient = new TsaClient(new URL("http://localhost:8082/tsa.srf"), "", "", digest);
 
         String originalMessage = UUID.randomUUID().toString();
-        digest.digest(TSAClient.hexStringToByteArray(originalMessage));
+        digest.digest(TsaClient.hexStringToByteArray(originalMessage));
 
         TimeStampToken token = tsaClient.getTimeStampToken(originalMessage.getBytes());
 
@@ -52,10 +52,11 @@ public class TSAClientTests {
     @Test
     public void getGost2012_256TimeStamp() throws IOException {
         MessageDigest digest = new GOST3411.Digest2012_256();
-        TSAClient tsaClient = new TSAClient(new URL("http://testguc/TSP/tsp.srf"), "", "", digest);
+        //TsaClient tsaClient = new TsaClient(new URL("http://testguc/TSP/tsp.srf"), "", "", digest);
+        TsaClient tsaClient = new TsaClient(new URL("http://www.cryptopro.ru/tsp/tsp.srf"), "", "", digest);
 
         String originalMessage = UUID.randomUUID().toString();
-        digest.digest(TSAClient.hexStringToByteArray(originalMessage));
+        digest.digest(TsaClient.hexStringToByteArray(originalMessage));
 
         TimeStampToken token = tsaClient.getTimeStampToken(originalMessage.getBytes());
 

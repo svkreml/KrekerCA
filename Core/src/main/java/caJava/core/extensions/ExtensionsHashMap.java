@@ -10,11 +10,11 @@ import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import javax.security.auth.x500.X500Principal;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 import java.util.function.BiFunction;
 
 public class ExtensionsHashMap extends HashMap<String, BiFunction<CertBuildContainer, String[], Boolean>> {
+
     public ExtensionsHashMap() {
 
         /*2.5.29.16 Идентификатор ключа субъекта -- Открытый ключ субъекта*/
@@ -64,7 +64,27 @@ public class ExtensionsHashMap extends HashMap<String, BiFunction<CertBuildConta
             }
             return false;
         }));
+        /*"2.5.29.37" улучшенный ключ   (пока просто возможность ставить метку времени)*/
+        put("extendedKeyUsage", ((certBuildContainer, params) -> {
+            try {
+                if (params == null || params.length < 1)
+                    params = new String[]{"true"};
+                List<ASN1ObjectIdentifier> list = new ArrayList<>();
+                list.add(new ASN1ObjectIdentifier("1.3.6.1.5.5.7.3.8"));//Установка метки времени (1.3.6.1.5.5.7.3.8)
+                KeyPurposeId[] kps = new KeyPurposeId[list.size()];
+                int idx = 0;
+                for (ASN1ObjectIdentifier oid : list) {
+                    kps[idx++] = KeyPurposeId.getInstance(oid);
+                }
+                certBuildContainer.getX509v3CertificateBuilder().addExtension(Extension.extendedKeyUsage,
+                        Boolean.valueOf(params[0]), new ExtendedKeyUsage(kps));
+                return true;
 
+            } catch (CertIOException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }));
         /*Основные ограничения	2.5.29.19*/
         put("basicConstraints", ((certBuildContainer, params) -> {
             try {

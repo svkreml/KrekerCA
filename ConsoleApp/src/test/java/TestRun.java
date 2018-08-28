@@ -44,6 +44,20 @@ public class TestRun {
     }
 
     @Test
+    public void createCertTsa(){
+        String[] args = {"-run", "createCert", "-subject", "subject.json", "-extensions", "file", "-extensions", "extensionsTsa.json", "-outputDer",
+                "testTsa.der", "-pass", "123456", "-alg", "gost2001","-dateFrom","2012-12-24","-dateTo","2024-12-24",
+                "-ca","-caFile", "exampleKeys/gost2001Ca.der","-caPKey","exampleKeys/gost2001Ca.der.pkey"};
+        try {
+            Main.main(args);
+            assert true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert false;
+        }
+    }
+
+    @Test
     public void createCertPfx(){
         String[] args = {"-run", "createCert", "-subject", "subject.json", "-extensions", "file", "-extensions", "extensions.json", "-outputDer",
                 "testSub.der", "-pass", "123456", "-alg", "rsa2048","-dateFrom","2012-12-24","-dateTo","2024-12-24",

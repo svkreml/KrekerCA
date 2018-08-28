@@ -24,10 +24,6 @@ import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500NameStyle;
 import org.bouncycastle.asn1.x500.style.RFC4519Style;
 import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.cms.SignerInformation;
-import org.bouncycastle.cms.SignerInformationVerifier;
-import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
-import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.tsp.*;
 import org.bouncycastle.util.Store;
 import org.testng.log4testng.Logger;
@@ -41,7 +37,6 @@ import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.security.Security;
-import java.security.cert.CertificateException;
 import java.util.Arrays;
 
 
@@ -51,9 +46,9 @@ import java.util.Arrays;
  * @author Vakhtang Koroghlishvili
  * @author John Hewson
  */
-public class TSAClient {
+public class TsaClient {
 
-    private static final Logger LOG = Logger.getLogger(TSAClient.class);
+    private static final Logger LOG = Logger.getLogger(TsaClient.class);
     private final URL url;
     private final String username;
     private final String password;
@@ -66,7 +61,7 @@ public class TSAClient {
      * @param password password of TSA
      * @param digest   the message digest to use
      */
-    public TSAClient(URL url, String username, String password, MessageDigest digest) {
+    public TsaClient(URL url, String username, String password, MessageDigest digest) {
         this.url = url;
         this.username = username;
         this.password = password;
@@ -223,7 +218,7 @@ public class TSAClient {
         );*/
         System.out.print("Политика сервера штампов времени: ");
         System.out.println( token.getTimeStampInfo().getPolicy().getId());
-        System.out.println("Цепочка сертификатов сервисв штампов времени:[");
+        System.out.println("Цепочка сертификатов сервисов штампов времени:[");
         Store certificates = token.getCertificates();
 
 

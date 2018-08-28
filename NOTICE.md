@@ -39,7 +39,7 @@ or in the "license" file accompanying this file. This file is distributed on an 
 
 Time Stamping Authority (TSA) Client [RFC 3161].
 ======================
-https://svn.apache.org/repos/asf/pdfbox/trunk/examples/src/main/java/org/apache/pdfbox/examples/signature/TSAClient.java
+https://svn.apache.org/repos/asf/pdfbox/trunk/examples/src/main/java/org/apache/pdfbox/examples/signature/TsaClient.java
 
 author Vakhtang Koroghlishvili
 

@@ -108,6 +108,7 @@ public class OcspServer extends HttpServlet {
     }
 
     private static BasicOCSPRespBuilder getBasicOCSPRespBuilder(X509Certificate ocspCert) throws IOException, OperatorCreationException, OCSPException {
+        //fixme тут какая-то дичь
         ASN1InputStream aIn = new ASN1InputStream(ocspCert.getPublicKey().getEncoded());
         SubjectPublicKeyInfo info = SubjectPublicKeyInfo.getInstance(aIn.readObject());
         AlgorithmIdentifier algorithmIdentifier = info.getAlgorithm();
