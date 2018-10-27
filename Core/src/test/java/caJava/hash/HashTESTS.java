@@ -15,7 +15,9 @@ public class HashTESTS {
        // CreateHash.digestGost2012_256("C:\\Users\\s.kremlev\\Desktop\\Тестирование ГУЦ 2017\\гост2012с\\CMS\\CMS\\gost2012strong_detach.sig");
       //  System.out.println(org.bouncycastle.util.encoders.Base64.toBase64String(CreateHash.digestGost("C:\\Users\\s.kremlev\\Downloads\\Telegram Desktop\\source.txt")));
     //    System.out.println(org.bouncycastle.util.encoders.Base64.toBase64String(CreateHash.digestGost2012_256("C:\\Users\\s.kremlev\\Downloads\\Telegram Desktop\\source.txt")));
-        System.out.println(org.bouncycastle.util.encoders.Base64.toBase64String(CreateHash.digestGost2012_256("C:\\Users\\s.kremlev\\Desktop\\xlt1_cades_sidorov.p7s")));
+
+        String input ="0";
+        System.out.println(org.bouncycastle.util.encoders.Base64.toBase64String(CreateHash.digestGost(input.getBytes())));
       //  System.out.println(org.bouncycastle.util.encoders.Base64.toBase64String(CreateHash.digestGost2012_512("C:\\Users\\s.kremlev\\Downloads\\Telegram Desktop\\source.txt")));
 
 

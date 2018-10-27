@@ -12,6 +12,7 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.util.Store;
+import org.bouncycastle.util.encoders.Base64;
 import org.bouncycastle.util.encoders.Hex;
 
 import java.io.ByteArrayInputStream;
@@ -155,6 +156,7 @@ public class Cms {
             CMSSignedData sigData =
                     gen.generate(new CMSProcessableByteArray(signatureFileBytes), !isDetached);
 
+            System.out.println("rawSignature = " + new String(Base64.encode(sigData.getSignerInfos().getSigners().iterator().next().getSignature())));
             return sigData;
         } catch (OperatorCreationException | CMSException e) {
             throw new SignatureException("Failed to generate signature", e);
