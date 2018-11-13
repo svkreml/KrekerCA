@@ -3,6 +3,8 @@ package caJava.core.extensions;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 
 import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 
@@ -19,13 +21,30 @@ public class CertBuildContainer {
         this.from =from;
         this.to=to;
     }
+    public CertBuildContainer(X509v3CertificateBuilder x509v3CertificateBuilder, PublicKey publicKey, X509Certificate caCert,Date from, Date to) {
+        this.x509v3CertificateBuilder = x509v3CertificateBuilder;
+        this.publicKey = publicKey;
+        this.caCert = caCert;
+        this.from =from;
+        this.to=to;
+    }
 
     public CertBuildContainer(X509v3CertificateBuilder x509v3CertificateBuilder, KeyPair keyPair, X509Certificate caCert) {
         this.x509v3CertificateBuilder = x509v3CertificateBuilder;
         this.keyPair = keyPair;
         this.caCert = caCert;
     }
+    public CertBuildContainer(X509v3CertificateBuilder x509v3CertificateBuilder, PublicKey publicKey, X509Certificate caCert) {
+        this.x509v3CertificateBuilder = x509v3CertificateBuilder;
+        this.publicKey = publicKey;
+        this.caCert = caCert;
+    }
 
+    public PublicKey getPublicKey() {
+        return publicKey;
+    }
+
+    PublicKey publicKey;
     public Date getFrom() {
         return from;
     }

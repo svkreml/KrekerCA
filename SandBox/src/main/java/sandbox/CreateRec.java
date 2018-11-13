@@ -90,6 +90,10 @@ public class CreateRec {
             builder.addAttribute(PKCSObjectIdentifiers.pkcs_9_at_extensionRequest, extGen.generate());*/
 
 
+
+
+
+
         PKCS10CertificationRequest req1 = requestBuilder.build(new JcaContentSignerBuilder(cryptoAlg.signatureAlgorithm).setProvider(cryptoAlg.cryptoProvider).build(keypair.getPrivate()));
         //   JcaPKCS10CertificationRequest req2 = new JcaPKCS10CertificationRequest(req1.getEncoded()).setProvider("BC");
 

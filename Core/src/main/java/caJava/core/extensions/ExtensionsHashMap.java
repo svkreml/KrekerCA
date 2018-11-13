@@ -56,7 +56,7 @@ public class ExtensionsHashMap extends HashMap<String, BiFunction<CertBuildConta
                 if (params == null || params.length < 1)
                     params = new String[]{"false"};
                 certBuildContainer.getX509v3CertificateBuilder().addExtension(Extension.subjectKeyIdentifier,
-                        Boolean.valueOf(params[0]), new JcaX509ExtensionUtils().createSubjectKeyIdentifier((certBuildContainer.getKeyPair()).getPublic()));
+                        Boolean.valueOf(params[0]), new JcaX509ExtensionUtils().createSubjectKeyIdentifier(certBuildContainer.getPublicKey()));
                 return true;
 
             } catch (NoSuchAlgorithmException | CertIOException e) {

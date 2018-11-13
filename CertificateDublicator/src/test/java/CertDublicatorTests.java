@@ -1,13 +1,7 @@
 import caJava.Utils.MeUtils;
 import caJava.core.CertAndKey;
-import org.bouncycastle.operator.OperatorCreationException;
+import certDublicator.CertDublicator;
 import org.testng.annotations.Test;
-
-import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.cert.CertificateException;
 
 public class CertDublicatorTests {
     @Test
