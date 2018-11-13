@@ -40,9 +40,9 @@ public class CAserver {
 
 
         addServlet(context, "/sendfile", new SaveFile());
-        addServlet(context, "/ocsp", new OcspServer());
+       // addServlet(context, "/ocsp", new OcspServer());
         addServlet(context, "/tsa.srf", new TsaServer());
-        //addServlet(context, "/tsa.srf", new OcspServer());
+
 
         server.setHandler(context);
 

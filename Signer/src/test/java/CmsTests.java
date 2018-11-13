@@ -24,7 +24,7 @@ public class CmsTests {
         File pfx = new File("..\\ConsoleApp\\exampleKeys\\gost2001Ca.pfx");
         System.out.println(pfx.getAbsolutePath());
         CertAndKey certAndKey = PfxUtils.convertToCertAndKey(pfx, "123456");
-        byte[] originalContent = FileManager.read(new File("../Signer/testSigner/source.txt"));
+        byte[] originalContent = FileManager.read(new File("../Signer\\src\\test\\java\\CmsTests.java"));
         CMSSignedData cmsSignedDataDetached = Cms.generateEnvelopedSignature(originalContent, certAndKey, true);
         Cms.verifyDetached(cmsSignedDataDetached.getEncoded(), originalContent);
         FileManager.writeWithDir(new File("testSigner/cmsSignedDataDetached.bin"), cmsSignedDataDetached.getEncoded());

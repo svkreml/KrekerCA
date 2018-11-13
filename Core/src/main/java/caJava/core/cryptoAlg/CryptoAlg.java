@@ -4,6 +4,19 @@ import java.util.logging.Logger;
 
 public class CryptoAlg {
     private static Logger logger = Logger.getLogger(CryptoAlg.class.getName());
+
+    public String getAlgorithm() {
+        return algorithm;
+    }
+
+    public String getSignatureAlgorithm() {
+        return signatureAlgorithm;
+    }
+
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+    }
+
     public String algorithm;
     public String signatureAlgorithm;
     public String ellipticCurve;

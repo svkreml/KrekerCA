@@ -198,7 +198,7 @@ public class TsaClient {
     public void printTokenInfo(TimeStampToken token) {
 
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-        System.out.print("Время генераци: ");
+        System.out.print("Время генерации: ");
         System.out.println(token.getTimeStampInfo().getGenTime());
         System.out.print("Используемый алгоритм при генерации хэша: ");
         System.out.println(token.getTimeStampInfo().getMessageImprintAlgOID());

@@ -83,7 +83,7 @@ public class CertEnveloper {
     }
 
     public static PKCS10CertificationRequest decodeCertRec(byte[] input) {
-        //todo decodeCert decodeCertRec
+
         return null;
     }
    static DefaultAlgorithmNameFinder defaultAlgorithmNameFinder = new DefaultAlgorithmNameFinder();

@@ -56,12 +56,15 @@ public class Cms {
     }
 //FIXME не работает
     public static void verifyByHash(byte[] bytes, byte[] hash) throws CMSException, CertificateException, OperatorCreationException {
+        //fixme тут какая-то дичь
         CMSSignedData cms;
         String myHash = "9D81CF727B4A63E4FBD312BF755CFB64701AC4C5FC49DA55302A10059BBCCACA";
         String cryptoProHash = "D918FC27B7A4364EBF3D21FB57C5BF4607A14C5CCF94AD5503A20150B9CBACAC";
         //String cryptoProHash = "b01fae8272c6c6be5bf9e3e85d8f50563f42c22167ed4e88f0b029e31e069bec";
         byte[] read = new byte[0];
         try {
+
+            //fixme тут какая-то дичь
             read = FileManager.read(new File("C:\\Users\\svkre\\Downloads\\cms-det-hach_2001_2018.sig"));
             System.out.println(Hex.toHexString(read));
         } catch (IOException e) {

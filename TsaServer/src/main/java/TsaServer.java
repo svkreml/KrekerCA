@@ -51,18 +51,18 @@ public class TsaServer extends HttpServlet {
 
     public TsaServer(File cert, File pkey) throws IOException {
         MeUtils.loadBC();
-        System.out.println("1");
+
         X509Certificate x509Certificate = CertEnveloper.decodeCert(FileManager.read(cert));
         PrivateKey privateKey = CertEnveloper.decodePrivateKey(pkey);
         this.tsaCertAndKey = new CertAndKey(privateKey, x509Certificate);
-        System.out.println("2");
+
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 
         try {
-            System.out.println("3");
+
             InputStream inputStream = request.getInputStream();
             int available = inputStream.available();
             byte[] bytes = new byte[available];
@@ -73,8 +73,8 @@ public class TsaServer extends HttpServlet {
             response.addHeader("Accept", "application/tsp-response");
 
 
-            String cert = "ConsoleApp/exampleKeys/testTsa.der";
-            String pkey = "ConsoleApp/exampleKeys/testTsa.der.pkey";
+            String cert = "ConsoleApp/exampleKeys/testTsa2012.der";
+            String pkey = "ConsoleApp/exampleKeys/testTsa2012.der";
             TsaServer tsaServer = new TsaServer(new File(cert), new File(pkey));
             TimeStampRequest timeStampRequest = new TimeStampRequest(bytes);
 
@@ -121,17 +121,17 @@ public class TsaServer extends HttpServlet {
 
         SignerInfoGenerator signerInfoGen;
         try {
-            signerInfoGen = sigBuilder.build(new JcaContentSignerBuilder(CryptoAlgFactory.getInstance(tsaCertAndKey.getPrivateKey().getAlgorithm()).signatureAlgorithm).setProvider("BC").build(tsaCertAndKey.getPrivateKey()), tsaCertAndKey.getCertificate());
+           // signerInfoGen = sigBuilder.build(new JcaContentSignerBuilder("GOST3411withECGOST3410").setProvider("BC").build(tsaCertAndKey.getPrivateKey()), tsaCertAndKey.getCertificate());
+            signerInfoGen = sigBuilder.build(new JcaContentSignerBuilder(CryptoAlgFactory.getInstance(tsaCertAndKey.getPrivateKey().getAlgorithm()).getSignatureAlgorithm()).setProvider("BC").build(tsaCertAndKey.getPrivateKey()), tsaCertAndKey.getCertificate());
         } catch (Exception e) {
             throw new RuntimeException("Could not create signer info generator", e);
         }
         try {
-
             DigestCalculator digestCalculator = digestCalculatorProvider.get(CertificateID.HASH_SHA1);
-            TimeStampTokenGenerator timeStampTokenGenerator = new TimeStampTokenGenerator(signerInfoGen, digestCalculator, new ASN1ObjectIdentifier("1.2.643.2.2.38.4"));
+            TimeStampTokenGenerator timeStampTokenGenerator = new TimeStampTokenGenerator(signerInfoGen, digestCalculator, new ASN1ObjectIdentifier("1.1.1"));
             ArrayList<X509CertificateHolder> certList = new ArrayList<>();
             certList.add(new X509CertificateHolder(tsaCertAndKey.getCertificate().getEncoded()));
-            Store<X509CertificateHolder> store = new CollectionStore(certList);
+            Store<X509CertificateHolder> store = new CollectionStore<>(certList);
             timeStampTokenGenerator.addCertificates(store);
             return timeStampTokenGenerator;
         } catch (Exception e) {

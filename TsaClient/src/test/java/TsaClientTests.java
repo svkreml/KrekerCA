@@ -34,9 +34,11 @@ public class TsaClientTests {
     @Test      //MessageDigest digest = new GOST3411.Digest2012_256();
     public void getGost2001TimeStamp() throws IOException {
         MessageDigest digest = new GOST3411.Digest();
-        TsaClient tsaClient = new TsaClient(new URL("http://localhost:8082/tsa.srf"), "", "", digest);
+       // TsaClient tsaClient = new TsaClient(new URL("http://localhost:8082/tsa.srf"), "", "", digest);
+        TsaClient tsaClient = new TsaClient(new URL("http://ep.uat.guc.voskhod.ru:8882/tsp/tsp.srf"), "", "", digest);
 
         String originalMessage = UUID.randomUUID().toString();
+        //String originalMessage = "Hello World!";
         digest.digest(TsaClient.hexStringToByteArray(originalMessage));
 
         TimeStampToken token = tsaClient.getTimeStampToken(originalMessage.getBytes());
@@ -46,6 +48,8 @@ public class TsaClientTests {
         IOUtils.write(token.getEncoded(), output);
         output.close();
         digest.reset();
+
+
         System.out.println("Совпадение хэша сообщения и хэша в штампе времени: "+tsaClient.validateTokenTimestamp(token, digest.digest(originalMessage.getBytes())));
     }
 
@@ -53,7 +57,8 @@ public class TsaClientTests {
     public void getGost2012_256TimeStamp() throws IOException {
         MessageDigest digest = new GOST3411.Digest2012_256();
         //TsaClient tsaClient = new TsaClient(new URL("http://testguc/TSP/tsp.srf"), "", "", digest);
-        TsaClient tsaClient = new TsaClient(new URL("http://www.cryptopro.ru/tsp/tsp.srf"), "", "", digest);
+        //TsaClient tsaClient = new TsaClient(new URL("http://www.cryptopro.ru/tsp/tsp.srf"), "", "", digest);
+        TsaClient tsaClient = new TsaClient(new URL("http://localhost:8082/tsa.srf"), "", "", digest);
 
         String originalMessage = UUID.randomUUID().toString();
         digest.digest(TsaClient.hexStringToByteArray(originalMessage));
