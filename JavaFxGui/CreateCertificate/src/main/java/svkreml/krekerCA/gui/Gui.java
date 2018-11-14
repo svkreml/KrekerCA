@@ -95,11 +95,11 @@ public class Gui {
         caCertificateTF.setPromptText("caCertificateTF");
         caCertificatePkeyTF.setPromptText("caCertificatePkeyTF");
 
-        gridPane.add(new Label("Путь к корневому сертификату"), 0, ++row, 1, 1);
+        gridPane.add(new Label("Путь к УЦ сертификату"), 0, ++row, 1, 1);
         gridPane.add(caCertificateTF, 1, row, 1, 1);
         gridPane.add(pickCaCert, 2, row, 1, 1);
 
-        gridPane.add(new Label("Путь к ключу корневого сертификата"), 0, ++row, 1, 1);
+        gridPane.add(new Label("Путь к ключу УЦ сертификата"), 0, ++row, 1, 1);
         gridPane.add(caCertificatePkeyTF, 1, row, 1, 1);
         gridPane.add(pickCaCertPkey, 2, row, 1, 1);
         return row;
