@@ -17,6 +17,7 @@ public class CustomExtension extends Extension {
 
     public static final ASN1ObjectIdentifier issuerSignTool = new ASN1ObjectIdentifier("1.2.643.100.112").intern();
     public static final ASN1ObjectIdentifier subjectSignTool = new ASN1ObjectIdentifier("1.2.643.100.111").intern();
+
     public CustomExtension(ASN1ObjectIdentifier asn1ObjectIdentifier, ASN1Boolean asn1Boolean, ASN1OctetString asn1OctetString) {
         super(asn1ObjectIdentifier, asn1Boolean, asn1OctetString);
     }

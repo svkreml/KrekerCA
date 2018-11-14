@@ -26,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.X509Certificate;
+import java.security.cert.X509Extension;
 import java.security.spec.ECGenParameterSpec;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -96,6 +97,7 @@ public class CertDublicator {
                 extensionsHashMap.get("subjectKeyIdentifier").apply(buildContainer, null);
                 break;
             default:
+
                 buildContainer.getX509v3CertificateBuilder().addExtension(new ASN1ObjectIdentifier(s), b, X509ExtensionUtil.fromExtensionValue(extensionValue));
                 break;
         }

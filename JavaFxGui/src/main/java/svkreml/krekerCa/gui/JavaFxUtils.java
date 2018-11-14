@@ -1,3 +1,5 @@
+package svkreml.krekerCa.gui;
+
 import caJava.fileManagement.FileManager;
 import javafx.stage.FileChooser;
 
@@ -11,6 +13,8 @@ public class JavaFxUtils {
     static {
         try {
             lastOpenedFile = new File(new String(FileManager.read(propFile)));
+            if(!lastOpenedFile.isDirectory()||!lastOpenedFile.exists())
+                lastOpenedFile = new File("C:\\");
         } catch (IOException e) {
             lastOpenedFile = new File("C:\\");
         }

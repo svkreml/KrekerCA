@@ -12,6 +12,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import svkreml.krekerCa.gui.JavaFxUtils;
 
 import java.io.File;
 import java.io.IOException;

@@ -9,6 +9,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.stage.FileChooser;
 import org.bouncycastle.util.encoders.Base64;
+import svkreml.krekerCa.gui.JavaFxUtils;
 
 import java.io.File;
 import java.io.IOException;
