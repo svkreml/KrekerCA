@@ -5,7 +5,9 @@ import caJava.core.CertAndKey;
 import caJava.core.cryptoAlg.CryptoAlg;
 import caJava.core.extensions.CertBuildContainer;
 import caJava.core.extensions.ExtensionParam;
+import caJava.core.extensions.ExtensionWrapper;
 import caJava.core.extensions.ExtensionsHashMap;
+import caJava.core.extensions.extParser.ExtensionObject;
 import caJava.customOID.CustomBCStyle;
 import caJava.customOID.CustomExtension;
 import caJava.customOID.CustomText;
@@ -82,10 +84,53 @@ public class CertificateCreator {
     }*/
 
 
+    public CertAndKey generateCertificateV2(X500Name subject, Vector<ExtensionObject> extensions, BigInteger serial, Date from, Date to) throws Exception {
+        return generateCertificateV2( subject, extensions,  serial,  from, to, null, null);
+    }
+
+    public CertAndKey generateCertificateV2(X500Name subject, Vector<ExtensionObject> extensions, BigInteger serial, Date from, Date to, X509Certificate ca, PrivateKey caPKey) throws Exception {
+        logger.info("Генерация сертификата\n\t" + subject + ", дата '" + from + "' - '" + to + "'");
+        //Генерация пары ключей
+        KeyPair keypair = keypairGen.generateKeyPair();
+
+
+        X500Name issuer;
+        if (ca != null)
+            issuer = new X500Name(ca.getSubjectX500Principal().getName(X500Principal.RFC2253));
+        else {
+            issuer = subject;
+        }
+        //Создание заготовки под сертификат
+        X509v3CertificateBuilder x509v3CertificateBuilder = new JcaX509v3CertificateBuilder(
+                issuer,
+                serial,
+                from,
+                to,
+                subject,
+                keypair.getPublic());
+
+        //todo все расширения должны быть в каком-то конфиге, который на предыдущем этапе грузится из файла
+        CertBuildContainer buildContainer = new CertBuildContainer(x509v3CertificateBuilder, keypair, ca,from,to);
+
+        for (ExtensionObject extension : extensions) {
+            extension.addExtension(buildContainer);
+        }
+
+
+
+        // extensionsGucRF(ca, keypair, x509v3CertificateBuilder);
+        // build BouncyCastle certificate
+        if (caPKey == null) caPKey = keypair.getPrivate();
+        return buildCertificate(caPKey, keypair, x509v3CertificateBuilder);
+    }
+
+
+
+@Deprecated
     public CertAndKey generateCertificate(X500Name subject, Vector<ExtensionParam> extensions, BigInteger serial, Date from, Date to) throws CertificateException, OperatorCreationException {
         return generateCertificate( subject, extensions,  serial,  from, to, null, null);
     }
-
+@Deprecated
     public CertAndKey generateCertificate(X500Name subject, Vector<ExtensionParam> extensions, BigInteger serial, Date from, Date to, X509Certificate ca, PrivateKey caPKey) throws CertificateException, OperatorCreationException {
         logger.info("Генерация сертификата\n\t" + subject + ", дата '" + from + "' - '" + to + "'");
         //Генерация пары ключей

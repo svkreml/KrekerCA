@@ -185,6 +185,7 @@ public class ExtensionsHashMap extends HashMap<String, BiFunction<CertBuildConta
                 //if (s instanceof String[]) {
                 if (params.length == 2) {
                     KeyUsage usage = new KeyUsage(Integer.parseInt(params[1], 16));
+
                     certBuildContainer.getX509v3CertificateBuilder().addExtension(Extension.keyUsage, Boolean.valueOf(params[0]), usage.getEncoded());
                     return true;
                 }
