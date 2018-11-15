@@ -44,8 +44,8 @@ public class Gui {
 
     public void initialize() {
         int row = 0;
-        gridPane.add(new Label("Серийный номер"), 0, ++row, 1, 1);
-        gridPane.add(serialTF, 1, row, 1, 1);
+        gridPaneCrl.add(new Label("Серийный номер"), 0, ++row, 1, 1);
+
 
         initCreator(row);
     }
