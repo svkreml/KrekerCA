@@ -5,6 +5,7 @@ import caJava.core.extensions.extParser.PrivateKeyUsagePeriodObject;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
+import java.time.ZoneId;
 import java.util.Date;
 
 public class PrivateKeyUsagePeriodExtensionField implements ExtensionField {
@@ -12,8 +13,8 @@ public class PrivateKeyUsagePeriodExtensionField implements ExtensionField {
     String discr = "2.5.29.16, период использования закрытого ключа";
 
 
-    TextField dateFrom = new TextField();
-    TextField dateTo = new TextField();
+    DatePicker dateFrom = new DatePicker();
+    DatePicker dateTo = new DatePicker();
 
     CheckBox isUsed = new CheckBox();
     CheckBox isCritical = new CheckBox();
@@ -22,7 +23,7 @@ public class PrivateKeyUsagePeriodExtensionField implements ExtensionField {
     public ExtensionObject getExtensionObject() {
 
         if (auto.isSelected()==false)
-            return new PrivateKeyUsagePeriodObject(isCritical.isSelected(), new Date(dateFrom.getText()), new Date(dateTo.getText()));
+            return new PrivateKeyUsagePeriodObject(isCritical.isSelected(), Date.from(dateFrom.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()), Date.from(dateTo.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         else
             return new PrivateKeyUsagePeriodObject(isCritical.isSelected());
     }

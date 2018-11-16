@@ -1,17 +1,16 @@
 package svkreml.krekerCA.gui.params.extensions;
 
 import caJava.core.extensions.extParser.AuthorityKeyIdentifierObject;
-import caJava.core.extensions.extParser.CRLDistributionPointsObject;
 import caJava.core.extensions.extParser.ExtensionObject;
-import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
+import caJava.core.extensions.extParser.SubjectKeyIdentifierExtensionObject;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.GridPane;
 
-import java.util.Vector;
-
-public class AuthorityKeyIdentifierExtensionField implements ExtensionField  {
-    String name = "authorityKeyIdentifier";
-    String discr = "2.5.29.35, идентификатор ключа центра сертификатов";
+public class SubjectKeyIdentifierExtensionField implements ExtensionField  {
+    String name = "subjectKeyIdentifier";
+    String discr = "2.5.29.14, Идентификатор ключа субъекта -- Открытый ключ субъекта";
 
 
 
@@ -19,7 +18,7 @@ public class AuthorityKeyIdentifierExtensionField implements ExtensionField  {
     CheckBox isCritical = new CheckBox();
 
     public ExtensionObject getExtensionObject() {
-        return new AuthorityKeyIdentifierObject(isCritical.isSelected());
+        return new SubjectKeyIdentifierExtensionObject(isCritical.isSelected());
     }
 
     @Override

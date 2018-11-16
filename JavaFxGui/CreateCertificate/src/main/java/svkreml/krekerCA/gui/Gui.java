@@ -3,25 +3,19 @@ package svkreml.krekerCA.gui;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import org.bouncycastle.operator.OperatorCreationException;
 import svkreml.krekerCA.CertificateGeneratorHandler;
+import svkreml.krekerCA.CrlGeneratorHandler;
 import svkreml.krekerCA.gui.params.extensions.*;
 import svkreml.krekerCA.gui.params.subject.SubjectField;
 import svkreml.krekerCA.gui.params.subject.SubjectOrder;
 import svkreml.krekerCa.gui.JavaFxUtils;
 
-import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.cert.CertificateException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Vector;
 
 public class Gui {
@@ -35,20 +29,23 @@ public class Gui {
     Button pickCaCert = new Button("...");
     Button pickCaCertPkey = new Button("...");
     TextField serialTF = new TextField("123123123");
-    TextField dateFromTF = new TextField("Sat, 12 Aug 1995 13:30:00 GMT+0430");
-    TextField dateToTF = new TextField("Sat, 12 Aug 2020 13:30:00 GMT+0430");
-    TextField AlgTF = new TextField("gost2012_256");
+    DatePicker dateFromDP = new DatePicker();
+    DatePicker dateToDP = new DatePicker();
+    ChoiceBox<String> algsCB = new ChoiceBox<String>();
     CertificateGeneratorHandler certificateGeneratorHandler = new CertificateGeneratorHandler();
     Vector<ExtensionField> extensionFields = new Vector<>();
     Vector<SubjectField> subjectFields = new Vector<>();
 
     public void initialize() {
+        algsCB.getItems().addAll("gost2012_256", "gost2012_512", "gost2001", "rsa2048", "rsa4096");
+
+        CrlGeneratorHandler crlGeneratorHandler = new CrlGeneratorHandler(gridPaneCrl,  caCertificateTF, caCertificatePkeyTF);
+        crlGeneratorHandler.addCrlField();
+
         int row = 0;
-        gridPaneCrl.add(new Label("Серийный номер"), 0, ++row, 1, 1);
-
-
         initCreator(row);
     }
+
 
     private int initCreator(int row) {
         gridPane.setPrefWidth(1000);
@@ -67,8 +64,6 @@ public class Gui {
         gridPane.add(new Label("Создание Сертификата"), 0, 0, 3, 1);
 
 
-
-
         row = setCaCertificatePath(row);
         row = setBaseFields(row);
         row = setSubject(row);
@@ -84,11 +79,28 @@ public class Gui {
     private void generateCertificate(ActionEvent event) {
         System.out.println("Нажата кнопка генерации сертификата");
         try {
-            certificateGeneratorHandler.generate(serialTF, dateFromTF, dateToTF, AlgTF, subjectFields, extensionFields, selfSigned, caCertificateTF, caCertificatePkeyTF);
+            certificateGeneratorHandler.generate(serialTF, dateFromDP.getValue(), dateToDP.getValue(), algsCB.getValue(), subjectFields, extensionFields, selfSigned, caCertificateTF, caCertificatePkeyTF);
         } catch (Exception e) {
             e.printStackTrace();
+            String stackTrace = getStackTrace(e);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+
+            alert.setTitle(e.getMessage());
+            alert.setHeaderText(e.getLocalizedMessage());
+            alert.setContentText(stackTrace);
+            alert.getDialogPane().setMinWidth(800);
+            alert.getDialogPane().setMaxHeight(800);
+            alert.showAndWait();
         }
 
+    }
+
+    private String getStackTrace(Exception e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        String s = sw.toString();
+        return s;
     }
 
     private int setBaseFields(int row) {
@@ -99,11 +111,11 @@ public class Gui {
         gridPane.add(new Label("Серийный номер"), 0, ++row, 1, 1);
         gridPane.add(serialTF, 1, row, 1, 1);
         gridPane.add(new Label("Действителен с"), 0, ++row, 1, 1);
-        gridPane.add(dateFromTF, 1, row, 1, 1);
+        gridPane.add(dateFromDP, 1, row, 1, 1);
         gridPane.add(new Label("Действителен по"), 0, ++row, 1, 1);
-        gridPane.add(dateToTF, 1, row, 1, 1);
+        gridPane.add(dateToDP, 1, row, 1, 1);
         gridPane.add(new Label("Алгоритм"), 0, ++row, 1, 1);
-        gridPane.add(AlgTF, 1, row, 1, 1);
+        gridPane.add(algsCB, 1, row, 1, 1);
         return row;
     }
 
@@ -161,6 +173,12 @@ public class Gui {
         extensionFields.add(new AuthorityKeyIdentifierExtensionField());
         extensionFields.add(new KeyUsageExtensionField());
         extensionFields.add(new SubjectSignToolExtensionField());
+        extensionFields.add(new IssuerSignToolExtensionField());
+        extensionFields.add(new CertificatePoliciesExtensionField());
+        extensionFields.add(new ExtendedKeyUsageExtensionField());
+        extensionFields.add(new AuthorityInfoAccessExtensionField());
+        extensionFields.add(new BasicConstraintsExtensionField());
+        extensionFields.add(new SubjectKeyIdentifierExtensionField());
 
 
         for (ExtensionField extensionField : extensionFields) {

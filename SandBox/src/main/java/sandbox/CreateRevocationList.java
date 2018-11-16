@@ -2,6 +2,7 @@ package sandbox;
 
 
 import caJava.core.cryptoAlg.CryptoAlg;
+import caJava.core.cryptoAlg.CryptoAlgFactory;
 import caJava.core.cryptoAlg.impl.CryptoAlgGost2001;
 import caJava.fileManagement.CertEnveloper;
 import caJava.fileManagement.FileManager;
@@ -43,7 +44,8 @@ public class CreateRevocationList {
     }
 
     static private X509CRL generateCrl(X509Certificate ca, PrivateKey caPrivateKey, X509Certificate... revoked) throws Exception {
-        CryptoAlg cryptoAlg = CryptoAlgGost2001.getCryptoAlg();
+        CryptoAlg cryptoAlg = CryptoAlgFactory.getInstance(
+                caPrivateKey.getAlgorithm());
 
 
         X509v2CRLBuilder builder = new X509v2CRLBuilder(

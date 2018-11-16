@@ -17,6 +17,7 @@ public class CertBuildContainer {
     public CertBuildContainer(X509v3CertificateBuilder x509v3CertificateBuilder, KeyPair keyPair, X509Certificate caCert,Date from, Date to) {
         this.x509v3CertificateBuilder = x509v3CertificateBuilder;
         this.keyPair = keyPair;
+        this.publicKey= keyPair.getPublic();
         this.caCert = caCert;
         this.from =from;
         this.to=to;

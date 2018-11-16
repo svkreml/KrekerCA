@@ -158,7 +158,7 @@ public class ExtensionsHashMap extends HashMap<String, BiFunction<CertBuildConta
             }
             return false;
         }));
-        /*1.2.643.100.112*/
+        /*1.2.643.100.111*/
         put("subjectSignTool", ((certBuildContainer, params) -> {
             try {
                 if (params.length == 2) {

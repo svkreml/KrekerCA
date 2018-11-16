@@ -1,7 +1,7 @@
 package svkreml.krekerCA.gui.params.extensions;
 
-import caJava.core.extensions.extParser.CRLDistributionPointsObject;
 import caJava.core.extensions.extParser.ExtensionObject;
+import caJava.core.extensions.extParser.IssuerSignToolObject;
 import caJava.core.extensions.extParser.SubjectSignToolObject;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
@@ -9,9 +9,9 @@ import javafx.scene.layout.GridPane;
 
 import java.util.Vector;
 
-public class SubjectSignToolExtensionField  implements ExtensionField {
-    String name = "subjectSignTool";
-    String discr = "1.2.643.100.112, Средство электронной подписи владельца (1 строка)";
+public class IssuerSignToolExtensionField implements ExtensionField {
+    String name = "issueSignTool";
+    String discr = "1.2.643.100.111, Средство электронной подписи издателя (4 строки)";
 
     Vector<TextField> texts = new Vector<>();
     Vector<Label> textslabel = new Vector<>();
@@ -26,7 +26,7 @@ public class SubjectSignToolExtensionField  implements ExtensionField {
         for (int i = 0; i < texts.size(); i++) {
             urlsArray[i] = texts.elementAt(i).getText();
         }
-        return new SubjectSignToolObject(isCritical.isSelected(), urlsArray);
+        return new IssuerSignToolObject(isCritical.isSelected(), urlsArray);
     }
 
     @Override
