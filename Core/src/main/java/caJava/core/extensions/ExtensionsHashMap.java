@@ -111,6 +111,7 @@ public class ExtensionsHashMap extends HashMap<String, BiFunction<CertBuildConta
                 for (int i = 1; i < params.length; i++) {
                     lines.add(new DERUTF8String(params[i]));
                 }
+
                 certBuildContainer.getX509v3CertificateBuilder().addExtension(CustomExtension.issuerSignTool, Boolean.valueOf(params[0]), new BERSequence(lines));
                 return true;
             } catch (IOException e) {
@@ -119,6 +120,7 @@ public class ExtensionsHashMap extends HashMap<String, BiFunction<CertBuildConta
             return false;
         }));
         //Имя шаблона сертификата
+
         put("1.3.6.1.4.1.311.20.2", ((certBuildContainer, params) -> {
             try {
                 if (params.length == 2) {
@@ -129,6 +131,7 @@ public class ExtensionsHashMap extends HashMap<String, BiFunction<CertBuildConta
                     for (int i = 1; i < params.length; i++) {
                         lines.add(new DERUTF8String(params[i]));
                     }
+                    //fixme похоже на ошибку
                     certBuildContainer.getX509v3CertificateBuilder().addExtension(CustomExtension.subjectSignTool, Boolean.valueOf(params[0]), new BERSequence(lines));
                     return true;
                 }
@@ -149,6 +152,7 @@ public class ExtensionsHashMap extends HashMap<String, BiFunction<CertBuildConta
                     for (int i = 1; i < params.length; i++) {
                         lines.add(new DERUTF8String(params[i]));
                     }
+                    //fixme похоже на ошибку
                     certBuildContainer.getX509v3CertificateBuilder().addExtension(CustomExtension.subjectSignTool, Boolean.valueOf(params[0]), new BERSequence(lines));
                     return true;
                 }
