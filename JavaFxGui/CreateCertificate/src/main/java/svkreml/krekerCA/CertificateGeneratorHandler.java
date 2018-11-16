@@ -5,6 +5,7 @@ import caJava.core.creator.CertificateCreator;
 import caJava.core.cryptoAlg.CryptoAlg;
 import caJava.core.cryptoAlg.impl.CryptoAlgGost2001;
 import caJava.core.cryptoAlg.impl.CryptoAlgGost2012_256;
+import caJava.core.cryptoAlg.impl.CryptoAlgGost2012_512;
 import caJava.core.cryptoAlg.impl.CryptoRSA;
 import caJava.core.extensions.ExtensionParam;
 import caJava.core.extensions.ExtensionWrapper;
@@ -51,6 +52,9 @@ public class CertificateGeneratorHandler {
         switch (alg) {
             case "gost2012_256":
                 cryptoAlg = CryptoAlgGost2012_256.getCryptoAlg();
+                break;
+                case "gost2012_512":
+                cryptoAlg = CryptoAlgGost2012_512.getCryptoAlg();
                 break;
             case "gost2001":
                 cryptoAlg = CryptoAlgGost2001.getCryptoAlg();
