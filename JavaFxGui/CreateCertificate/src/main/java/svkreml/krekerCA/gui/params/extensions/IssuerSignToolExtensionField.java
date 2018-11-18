@@ -2,24 +2,23 @@ package svkreml.krekerCA.gui.params.extensions;
 
 import caJava.core.extensions.extParser.ExtensionObject;
 import caJava.core.extensions.extParser.IssuerSignToolObject;
-import caJava.core.extensions.extParser.SubjectSignToolObject;
-import javafx.scene.control.*;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 
 import java.util.Vector;
 
-public class IssuerSignToolExtensionField implements ExtensionField {
-    String name = "issueSignTool";
-    String discr = "1.2.643.100.111, Средство электронной подписи издателя (4 строки)";
-
+public class IssuerSignToolExtensionField extends BaseExtensionField {
     Vector<TextField> texts = new Vector<>();
     Vector<Label> textslabel = new Vector<>();
     int rowOfText;
 
-
-    CheckBox isUsed = new CheckBox();
-    CheckBox isCritical = new CheckBox();
+    public IssuerSignToolExtensionField() {
+        super("issueSignTool", "1.2.643.100.111, Средство электронной подписи издателя (4 строки)");
+    }
 
     public ExtensionObject getExtensionObject() {
         String[] urlsArray = new String[texts.size()];
@@ -30,16 +29,19 @@ public class IssuerSignToolExtensionField implements ExtensionField {
     }
 
     @Override
+    public Node getGui() {
+
+        addFieldToGridPane(gridPane);
+        return gridPane;
+    }
+
+    @Override
     public boolean getIsUsed() {
         return isUsed.isSelected();
     }
 
-    public int addFieldToGridPane(GridPane gridPane, int row) {
-        gridPane.add( new Separator(), 0, ++row,12,1);
-        gridPane.add(isCritical, 10, ++row);
-        gridPane.add(isUsed, 11, row);
-        gridPane.add(new Label(name), 0, row);
-        gridPane.add(new Label(discr), 1, row, 4, 1);
+    public int addFieldToGridPane(GridPane gridPane) {
+
         row = addTextLine(gridPane, row);
 
         rowOfText = row;
@@ -47,24 +49,28 @@ public class IssuerSignToolExtensionField implements ExtensionField {
         Button add = new Button("ещё");
         gridPane.add(add, 0, ++row);
         add.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
-                rowOfText = addTextLine(gridPane, rowOfText);
+            rowOfText = addTextLine(gridPane, rowOfText);
         });
         Button remove = new Button("удалить");
         gridPane.add(remove, 0, ++row);
         remove.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
+            if(!texts.isEmpty())
             rowOfText = removeTextLine(gridPane, rowOfText);
         });
         return row;
     }
+
     private int removeTextLine(GridPane gridPane, int row) {
         gridPane.getChildren().remove(texts.lastElement());
         gridPane.getChildren().remove(textslabel.lastElement());
         texts.remove(texts.lastElement());
-        textslabel.remove( textslabel.lastElement());
+        textslabel.remove(textslabel.lastElement());
         return row--;
     }
+
     private int addTextLine(GridPane gridPane, int row) {
         TextField url = new TextField();
+        url.setPrefColumnCount(40);
         Label label = new Label("Строка текста");
         textslabel.add(label);
         gridPane.add(label, 1, ++row);

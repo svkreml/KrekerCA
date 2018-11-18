@@ -12,6 +12,7 @@ public class SubjectField {
     String name;
     TextField textField = new TextField();
     CheckBox isUsed = new CheckBox();
+
     public SubjectField(String name, ASN1ObjectIdentifier asn1ObjectIdentifier) {
         this.asn1ObjectIdentifier = asn1ObjectIdentifier;
         this.name = name;
@@ -22,7 +23,8 @@ public class SubjectField {
     }
 
     public void addFieldToGridPane(GridPane gridPane, int row) {
-        gridPane.add(new Label(name+" ("+asn1ObjectIdentifier.getId()+")"), 0, row);
+        gridPane.add(new Label(name + " (" + asn1ObjectIdentifier.getId() + ")"), 0, row);
+        textField.setPrefColumnCount(40);
         gridPane.add(textField, 1, row);
         gridPane.add(isUsed, 11, row);
     }

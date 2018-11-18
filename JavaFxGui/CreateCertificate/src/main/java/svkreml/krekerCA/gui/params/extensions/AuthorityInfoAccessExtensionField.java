@@ -2,20 +2,21 @@ package svkreml.krekerCA.gui.params.extensions;
 
 import caJava.core.extensions.extParser.AuthorityInfoAccessExtensionObject;
 import caJava.core.extensions.extParser.ExtensionObject;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 
 import java.util.Vector;
 
-public class AuthorityInfoAccessExtensionField implements ExtensionField {
-    String name = "authorityInfoAccess";
-    String discr = "1.3.6.1.5.5.7.1.1, доступ к информации о центрах сертификации";
+public class AuthorityInfoAccessExtensionField extends BaseExtensionField {
+    public AuthorityInfoAccessExtensionField() {
+        super("authorityInfoAccess","1.3.6.1.5.5.7.1.1, доступ к информации о центрах сертификации");
+    }
 
     Vector<TextField> urls = new Vector<>();
 
-    CheckBox isUsed = new CheckBox();
-    CheckBox isCritical = new CheckBox();
+
     int rowOfUrl;
     Vector<Label> textslabel = new Vector<>();
 
@@ -27,19 +28,19 @@ public class AuthorityInfoAccessExtensionField implements ExtensionField {
         return new AuthorityInfoAccessExtensionObject(isCritical.isSelected(), urlsArray, new String[]{});
     }
 
+
+    @Override
+    public Node getGui() {
+        addFieldToGridPane(gridPane);
+        return gridPane;
+    }
     @Override
     public boolean getIsUsed() {
         return isUsed.isSelected();
     }
 
-    public int addFieldToGridPane(GridPane gridPane, int row) {
-        gridPane.add(new Separator(), 0, ++row, 12, 1);
-        gridPane.add(isCritical, 10, ++row);
-        gridPane.add(isUsed, 11, row);
-        gridPane.add(new Label(name), 0, row);
-        gridPane.add(new Label(discr), 1, row, 4, 1);
+    public int addFieldToGridPane(GridPane gridPane) {
         row = addUrl(gridPane, row);
-
         rowOfUrl = row;
         row = row + 20;
         Button button = new Button("ещё");
@@ -50,6 +51,7 @@ public class AuthorityInfoAccessExtensionField implements ExtensionField {
         Button remove = new Button("удалить");
         gridPane.add(remove, 0, ++row);
         remove.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
+            if(!urls.isEmpty())
             rowOfUrl = removeTextLine(gridPane, rowOfUrl);
         });
         return row;
@@ -65,10 +67,11 @@ public class AuthorityInfoAccessExtensionField implements ExtensionField {
 
     private int addUrl(GridPane gridPane, int row) {
         TextField url = new TextField();
+        url.setPrefColumnCount(40);
         Label label = new Label("URL");
         textslabel.add(label);
-        gridPane.add(label, 1, ++row);
-        gridPane.add(url, 2, row);
+        gridPane.add(label, 0, ++row);
+        gridPane.add(url, 1, row);
         urls.add(url);
         return row;
     }

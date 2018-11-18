@@ -2,7 +2,6 @@ package svkreml.krekerCA;
 
 import caJava.core.cryptoAlg.CryptoAlg;
 import caJava.core.cryptoAlg.CryptoAlgFactory;
-import caJava.core.cryptoAlg.impl.CryptoAlgGost2001;
 import caJava.fileManagement.CertEnveloper;
 import caJava.fileManagement.FileManager;
 import javafx.scene.control.*;
@@ -32,23 +31,22 @@ import java.util.HashMap;
 import java.util.Vector;
 
 public class CrlGeneratorHandler {
-    GridPane gridPaneCrl;
     Vector<TextField> serials = new Vector<>();
     Vector<DatePicker> dateOfAdds = new Vector<>();
     Vector<ChoiceBox<String>> reasons = new Vector<>();
     Vector<Label> textslabel = new Vector<>();
     int rowOfText = 2;
-    TextField caCertificateTF;
-    TextField caCertificatePkeyTF;
+
     TextField crlSerial = new TextField("1");
     DatePicker timeOfLife = new DatePicker(LocalDate.now());
     DatePicker createDate = new DatePicker();
+    GridPane gridPaneCrl = new GridPane();
+    CertPath certPath = new CertPath();
+    public CrlGeneratorHandler() {
+
+        certPath.hideCheckBox();
 
 
-    public CrlGeneratorHandler(GridPane gridPaneCrl, TextField caCertificateTF, TextField caCertificatePkeyTF) {
-        this.gridPaneCrl = gridPaneCrl;
-        this.caCertificateTF = caCertificateTF;
-        this.caCertificatePkeyTF = caCertificatePkeyTF;
 
         reasonCrl.put("unspecified",CRLReason.unspecified);
         reasonCrl.put("keyCompromise",CRLReason.keyCompromise);
@@ -63,8 +61,8 @@ public class CrlGeneratorHandler {
     }
 
     public void generate() throws Exception {
-        File ca = new File(caCertificateTF.getText());
-        File caPkey = new File(caCertificatePkeyTF.getText());
+        File ca = new File(certPath.getCaCertificatePkeyTF().getText());
+        File caPkey = new File(certPath.getCaCertificatePkeyTF().getText());
         byte[] bytes = FileManager.read(ca);
         X509Certificate caCert = CertEnveloper.decodeCert(bytes);
         PrivateKey privateKey = CertEnveloper.decodePrivateKey(caPkey);
@@ -96,7 +94,6 @@ public class CrlGeneratorHandler {
         X509CRLHolder crlHolder = builder.build(contentSignerBuilder.build(privateKey));
 
         JcaX509CRLConverter converter = new JcaX509CRLConverter();
-
         converter.setProvider("BC");
 
 
@@ -104,17 +101,20 @@ public class CrlGeneratorHandler {
         FileManager.write(new File(output.getAbsoluteFile() + ".crl"),converter.getCRL(crlHolder).getEncoded());
     }
 
-    public int addCrlField() {
-
-        gridPaneCrl.add(new Label("Время создания"), 0, 0);
-        gridPaneCrl.add(createDate, 1, 0);
-        gridPaneCrl.add(new Label("Время жизни CRL"), 0, 1);
-        gridPaneCrl.add(timeOfLife, 1, 1);
-        gridPaneCrl.add(new Label("Serial CRL"), 0, 2);
-        gridPaneCrl.add(crlSerial, 1, 2);
+    public Tab initCrl() {
+        Tab createCrlTab = new Tab("Создать список отзыва");
+int row = 6;
+        gridPaneCrl.add(certPath.initPath(), 0, 0, 20, 6);
+        gridPaneCrl.add(new Separator(), 0, ++row);
+        gridPaneCrl.add(new Label("Время создания"), 0, ++row);
+        gridPaneCrl.add(createDate, 1, row);
+        gridPaneCrl.add(new Label("Время жизни CRL"), 0, ++row);
+        gridPaneCrl.add(timeOfLife, 1, row);
+        gridPaneCrl.add(new Label("Serial CRL"), 0, ++row);
+        gridPaneCrl.add(crlSerial, 1, row);
 
         Button gen = new Button("Создать");
-        gridPaneCrl.add(gen, 2, 0);
+        gridPaneCrl.add(gen, 0, 210);
         gen.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
             try {
                 generate();
@@ -135,7 +135,8 @@ public class CrlGeneratorHandler {
             if (serials.size() > 0)
                 rowOfText = removeTextLine(rowOfText);
         });
-        return rowOfText;
+        createCrlTab.setContent(gridPaneCrl);
+        return createCrlTab;
     }
 
     private int removeTextLine(int row) {

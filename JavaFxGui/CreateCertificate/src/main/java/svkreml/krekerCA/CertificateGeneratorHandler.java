@@ -46,7 +46,9 @@ public class CertificateGeneratorHandler {
     }
 
     public void generate(TextField serialTF, LocalDate dateFromTF, LocalDate dateToTF, String alg, Vector<SubjectField> subjectFields, Vector<ExtensionField> extensionFields, CheckBox selfSigned, TextField caCertificateTF, TextField caCertificatePkeyTF) throws Exception {
-if(alg==null)throw new IllegalArgumentException("Алгоритм шифрования не выбран");
+        if (alg == null) throw new IllegalArgumentException("Алгоритм шифрования не выбран");
+
+
         CryptoAlg cryptoAlg;
         switch (alg) {
             case "gost2012_256":
@@ -90,16 +92,18 @@ if(alg==null)throw new IllegalArgumentException("Алгоритм шифрова
 
 
         if (selfSigned.isSelected())
-            certAndKey = certificateCreator.generateCertificateV2(x500NameBld.build(), extensionParams, new BigInteger(serialTF.getText(),16), dateFrom, dateTo);
+            certAndKey = certificateCreator.generateCertificateV2(x500NameBld.build(), extensionParams, new BigInteger(serialTF.getText(), 16), dateFrom, dateTo);
         else {
             File ca = new File(caCertificateTF.getText());
             File caPkey = new File(caCertificatePkeyTF.getText());
             byte[] bytes = FileManager.read(ca);
             X509Certificate caCert = CertEnveloper.decodeCert(bytes);
             PrivateKey privateKey = CertEnveloper.decodePrivateKey(caPkey);
-            certAndKey = certificateCreator.generateCertificateV2(x500NameBld.build(), extensionParams, new BigInteger(serialTF.getText(),16), dateFrom, dateTo, caCert, privateKey);
+            certAndKey = certificateCreator.generateCertificateV2(x500NameBld.build(), extensionParams, new BigInteger(serialTF.getText(), 16), dateFrom, dateTo, caCert, privateKey);
         }
-
+        File saveFolder = new File("outputCerts");
+        if (!saveFolder.exists())
+            saveFolder.mkdirs();
         File output = new File("outputCerts/" + getThumbprint(certAndKey.getCertificate()));
         FileManager.write(new File(output.getAbsoluteFile() + ".cer"), CertEnveloper.encodeCert(certAndKey.getCertificate()));
         FileManager.write(new File(output.getAbsoluteFile() + ".pkey"), CertEnveloper.encodePrivateKey(certAndKey.getPrivateKey()));
