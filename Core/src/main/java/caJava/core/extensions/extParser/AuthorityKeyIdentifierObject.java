@@ -24,6 +24,13 @@ public class AuthorityKeyIdentifierObject implements ExtensionObject  {
     private boolean isCritical;
     @Override
     public void addExtension(CertBuildContainer certBuildContainer) throws Exception {
+        if(overWritten){
+            certBuildContainer.getX509v3CertificateBuilder().addExtension(Extension.authorityKeyIdentifier, isCritical,
+                    overWrittenExtension);
+            return;
+        }
+
+
         if (certBuildContainer.getCaCert() == null) {
             throw new NullPointerException("Если есть authorityKeyIdentifier, то должен быть УЦ");
         }
@@ -32,4 +39,10 @@ public class AuthorityKeyIdentifierObject implements ExtensionObject  {
         certBuildContainer.getX509v3CertificateBuilder().addExtension(Extension.authorityKeyIdentifier, isCritical,
                 new JcaX509ExtensionUtils().createAuthorityKeyIdentifier(certBuildContainer.getCaCert().getPublicKey(), generalNames, certBuildContainer.getCaCert().getSerialNumber()));
     }
+    Extension overWrittenExtension;
+   public void setOverWritten(Extension overWrittenExtension){
+       this.overWrittenExtension=overWrittenExtension;
+        overWritten = true;
+    }
+    boolean overWritten = false;
 }

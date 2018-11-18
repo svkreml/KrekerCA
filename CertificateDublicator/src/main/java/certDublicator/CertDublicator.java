@@ -26,7 +26,6 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.X509Certificate;
-import java.security.cert.X509Extension;
 import java.security.spec.ECGenParameterSpec;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -70,25 +69,22 @@ public class CertDublicator {
     }
 
     public static void parseCertExtensions(X509Certificate input, CertBuildContainer buildContainer) throws IOException {
-        ExtensionsMap extensionsMap = new ExtensionsMap();
-        //extensionsMap
-
         for (String s : input.getCriticalExtensionOIDs()) {
             byte[] extensionValue = input.getExtensionValue(s);
 
             ASN1OctetString extOctetString = ASN1OctetString.getInstance(extensionValue);
             System.out.printf("%25s =%120s\n", s, fromHex(extOctetString.getLoadedObject().toString()));
-            nonCopybleExtensions(buildContainer, s, extensionValue, true);
+            extensionAdder(buildContainer, s, extensionValue, true);
         }
         System.out.println();
         for (String s : input.getNonCriticalExtensionOIDs()) {
             byte[] extensionValue = input.getExtensionValue(s);
             ASN1OctetString extOctetString = ASN1OctetString.getInstance(extensionValue);
             System.out.printf("%25s = %120s\n", s, fromHex(extOctetString.getLoadedObject().toString()));
-            nonCopybleExtensions(buildContainer, s, extensionValue, false);
+            extensionAdder(buildContainer, s, extensionValue, false);
         }
     }
-    private static void nonCopybleExtensions(CertBuildContainer buildContainer, String s, byte[] extensionValue, boolean b) throws IOException {
+    private static void extensionAdder(CertBuildContainer buildContainer, String s, byte[] extensionValue, boolean b) throws IOException {
         switch (s) {
             case "2.5.29.16":
                 extensionsHashMap.get("privateKeyUsagePeriod").apply(buildContainer, null);
@@ -97,7 +93,6 @@ public class CertDublicator {
                 extensionsHashMap.get("subjectKeyIdentifier").apply(buildContainer, null);
                 break;
             default:
-
                 buildContainer.getX509v3CertificateBuilder().addExtension(new ASN1ObjectIdentifier(s), b, X509ExtensionUtil.fromExtensionValue(extensionValue));
                 break;
         }
@@ -106,6 +101,7 @@ public class CertDublicator {
     public static CertAndKey generateDublicate( String donorFileName) throws Exception {
         return CertDublicator.generateDublicate(true, "", "", donorFileName);
     }
+
     public static CertAndKey generateDublicate(  String caFileName, String caPrivateKeyFileName,String donorFileName) throws Exception {
         return CertDublicator.generateDublicate(false, caFileName, caPrivateKeyFileName, donorFileName);
     }
@@ -134,16 +130,6 @@ public class CertDublicator {
             privateKeyCa = CertEnveloper.decodePrivateKey(new File(caPrivateKeyFileName));
         }
 
-
-
-
-
-
-
-// fill in certificate fields
-        // X500NameBuilder x500NameBld = new X500NameBuilder(BCStyle.INSTANCE);
-        //getName(donorCert, new File("C:\\Users\\s.kremlev\\Desktop\\expired\\TEST_LPOLKINA.name.json"));
-
         byte[] id = new byte[20];
         random.nextBytes(id);
         BigInteger serial = new BigInteger(160, random);
@@ -166,27 +152,13 @@ public class CertDublicator {
                 endDate,
                 subject,
                 keypair.getPublic());
-/*// build BouncyCastle certificate
-        ContentSigner signer = null;
-        if (isCa)
-            signer = new JcaContentSignerBuilder(cryptoAlg.signatureAlgorithm).build(keypair.getPrivate());
-        else
-            signer = new JcaContentSignerBuilder(cryptoAlg.signatureAlgorithm).build(privateKeyCa);*/
 
         CertificateCreator certificateCreator = new CertificateCreator(cryptoAlg);
-
 
         CertBuildContainer buildContainer = new CertBuildContainer(x509v3CertificateBuilder, keypair, ca, startDate, endDate);
         parseCertExtensions(donorCert, buildContainer);
 
         CertAndKey certAndKey = certificateCreator.buildCertificate(privateKeyCa, keypair, buildContainer.getX509v3CertificateBuilder());
-
-
-// convert to JRE certificate
-        //JcaX509CertificateConverter converter = new JcaX509CertificateConverter();
-        //converter.setProvider(new BouncyCastleProvider());
-        //X509Certificate x509 = converter.getCertificate(holder);
-
         return certAndKey;
     }
 

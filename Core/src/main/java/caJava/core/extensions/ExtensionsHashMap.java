@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.function.BiFunction;
-
+@Deprecated
 public class ExtensionsHashMap extends HashMap<String, BiFunction<CertBuildContainer, String[], Boolean>> {
 
     public ExtensionsHashMap() {
