@@ -5,7 +5,6 @@ import caJava.core.CertAndKey;
 import caJava.core.cryptoAlg.CryptoAlg;
 import caJava.core.extensions.CertBuildContainer;
 import caJava.core.extensions.ExtensionParam;
-import caJava.core.extensions.ExtensionWrapper;
 import caJava.core.extensions.ExtensionsHashMap;
 import caJava.core.extensions.extParser.ExtensionObject;
 import caJava.customOID.CustomBCStyle;
@@ -14,7 +13,6 @@ import caJava.customOID.CustomText;
 import org.bouncycastle.asn1.*;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
-import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -54,6 +52,7 @@ public class CertificateCreator {
     private CryptoAlg cryptoAlg;
 
     public CertificateCreator(CryptoAlg cryptoAlg) throws InvalidAlgorithmParameterException, NoSuchProviderException, NoSuchAlgorithmException {
+        //fixme ТУТ КЛЮЧ должен определляться из caPKey, а не конструктора, если это не самоподписанный
         if (Security.getProvider("BC") == null) {
             Security.addProvider(new BouncyCastleProvider());
             logger.info("Криптопровайдер BC был загружен");
@@ -89,6 +88,7 @@ public class CertificateCreator {
     }
 
     public CertAndKey generateCertificateV2(X500Name subject, Vector<ExtensionObject> extensions, BigInteger serial, Date from, Date to, X509Certificate ca, PrivateKey caPKey) throws Exception {
+        //fixme ТУТ КЛЮЧ должен определляться из caPKey, а не конструктора
         logger.info("Генерация сертификата\n\t" + subject + ", дата '" + from + "' - '" + to + "'");
         //Генерация пары ключей
         KeyPair keypair = keypairGen.generateKeyPair();
@@ -120,6 +120,9 @@ public class CertificateCreator {
 
         // extensionsGucRF(ca, keypair, x509v3CertificateBuilder);
         // build BouncyCastle certificate
+
+       // if(cryptoAlg.signatureAlgorithm
+
         if (caPKey == null) caPKey = keypair.getPrivate();
         return buildCertificate(caPKey, keypair, x509v3CertificateBuilder);
     }
@@ -166,6 +169,9 @@ public class CertificateCreator {
     }
 
     public CertAndKey buildCertificate(PrivateKey caPKey, KeyPair keypair, X509v3CertificateBuilder x509v3CertificateBuilder) throws OperatorCreationException, CertificateException {
+
+//fixme ТУТ КЛЮЧ должен определляться из caPKey, а не конструктора
+
         ContentSigner signer = new JcaContentSignerBuilder(cryptoAlg.signatureAlgorithm).build(caPKey);
         X509CertificateHolder holder = x509v3CertificateBuilder.build(signer);
 

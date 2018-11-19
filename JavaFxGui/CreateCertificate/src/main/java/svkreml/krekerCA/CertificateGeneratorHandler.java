@@ -3,6 +3,7 @@ package svkreml.krekerCA;
 import caJava.core.CertAndKey;
 import caJava.core.creator.CertificateCreator;
 import caJava.core.cryptoAlg.CryptoAlg;
+import caJava.core.cryptoAlg.CryptoAlgFactory;
 import caJava.core.cryptoAlg.impl.CryptoAlgGost2001;
 import caJava.core.cryptoAlg.impl.CryptoAlgGost2012_256;
 import caJava.core.cryptoAlg.impl.CryptoAlgGost2012_512;
@@ -69,7 +70,7 @@ public class CertificateGeneratorHandler {
             default:
                 throw new IllegalArgumentException("Ошибка в значении аргумента alg");
         }
-        CertificateCreator certificateCreator = new CertificateCreator(cryptoAlg);
+
 
         CertAndKey certAndKey;
         Date dateFrom = Date.from(dateFromTF.atStartOfDay(ZoneId.systemDefault()).toInstant());
@@ -77,7 +78,7 @@ public class CertificateGeneratorHandler {
         Date dateTo = Date.from(dateToTF.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
 
-        X500NameBuilder x500NameBld = new X500NameBuilder(BCStyle.INSTANCE);
+        X500NameBuilder x500NameBld = new X500NameBuilder(CustomBCStyle.INSTANCE);
         for (int i = subjectFields.size() - 1; i >= 0; i--) {
             SubjectField value = subjectFields.elementAt(i);
             if (value.getIsUsed())
@@ -90,15 +91,18 @@ public class CertificateGeneratorHandler {
                 extensionParams.add(extensionField.getExtensionObject());
         }
 
-
-        if (selfSigned.isSelected())
+        CertificateCreator certificateCreator;
+        if (selfSigned.isSelected()) {
+            certificateCreator = new CertificateCreator(cryptoAlg);
             certAndKey = certificateCreator.generateCertificateV2(x500NameBld.build(), extensionParams, new BigInteger(serialTF.getText(), 16), dateFrom, dateTo);
-        else {
+        } else {
             File ca = new File(caCertificateTF.getText());
             File caPkey = new File(caCertificatePkeyTF.getText());
             byte[] bytes = FileManager.read(ca);
             X509Certificate caCert = CertEnveloper.decodeCert(bytes);
             PrivateKey privateKey = CertEnveloper.decodePrivateKey(caPkey);
+            CryptoAlg cryptoAlgCA = CryptoAlgFactory.getInstance(caCert.getSigAlgOID());
+            certificateCreator = new CertificateCreator(cryptoAlgCA);
             certAndKey = certificateCreator.generateCertificateV2(x500NameBld.build(), extensionParams, new BigInteger(serialTF.getText(), 16), dateFrom, dateTo, caCert, privateKey);
         }
         File saveFolder = new File("outputCerts");

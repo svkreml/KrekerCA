@@ -7,10 +7,10 @@ public class CertDublicatorTests {
     @Test
     public void testSub() throws Exception {
         MeUtils.loadBC();
-        String caCert = "../ConsoleApp/exampleKeys/gost2001Ca.der";
-        String caPrivateKey = "../ConsoleApp/exampleKeys/gost2001Ca.der.pkey";
-        String donorCertificate = "ocsp.der";
-        String saveTo = "newCert.cer";
+        String caCert = "C:\\Users\\s.kremlev\\Desktop\\gost-export-cryptopro-key\\46230a85.000\\CA.cer";
+        String caPrivateKey = "C:\\Users\\s.kremlev\\Desktop\\gost-export-cryptopro-key\\46230a85.000\\CA.cer.pkey";
+        String donorCertificate = "C:\\Users\\s.kremlev\\Desktop\\gost-export-cryptopro-key\\cer.cer";
+        String saveTo = "C:\\Users\\s.kremlev\\Desktop\\gost-export-cryptopro-key\\copy.cer";
         CertAndKey certAndKey = CertDublicator.generateDublicate(caCert, caPrivateKey, donorCertificate);
         CertDublicator.saveToDer(certAndKey.getKeyPair(), certAndKey.getCertificate().getEncoded(), saveTo);
     }

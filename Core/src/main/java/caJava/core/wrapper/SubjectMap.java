@@ -8,6 +8,9 @@ import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.RFC4519Style;
+import org.bouncycastle.jcajce.provider.symmetric.DES;
+import org.bouncycastle.util.Arrays;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +21,7 @@ import java.util.Map;
 public class SubjectMap {
 
 
-    public static void main(String[] args) throws IOException {
+/*    public static void main(String[] args) throws IOException {
         X500NameBuilder x500NameBld = new X500NameBuilder(BCStyle.INSTANCE);
         x500NameBld.addRDN(CustomBCStyle.СНИЛС, new DERNumericString("0012345678"));
         x500NameBld.addRDN(CustomBCStyle.ОГРН, new DERNumericString("0012345678"));
@@ -37,11 +40,11 @@ public class SubjectMap {
         SubjectMap.save(x500NameBld.build(), file);
         X500Name name = SubjectMap.load(file);
         System.out.println(name);
-    }
+    }*/
 
 
     public static X500Name load(File file) throws IOException {
-        X500NameBuilder x500NameBld = new X500NameBuilder(BCStyle.INSTANCE);
+        X500NameBuilder x500NameBld = new X500NameBuilder(CustomBCStyle.INSTANCE);
         Map<String, String> map = (Map<String, String>) Json.readValue(LinkedHashMap.class, file);
         map.forEach((String oid, String value) -> {
             x500NameBld.addRDN((ASN1ObjectIdentifier) CustomBCStyle.DefaultLookUp.get(oid.toLowerCase()), value);
@@ -49,7 +52,7 @@ public class SubjectMap {
         return x500NameBld.build();
     }
     public static X500Name convert(Map<String, String> x500) {
-        X500NameBuilder x500NameBld = new X500NameBuilder(BCStyle.INSTANCE);
+        X500NameBuilder x500NameBld = new X500NameBuilder(CustomBCStyle.INSTANCE);
         x500.forEach((String oid, String value) -> {
             x500NameBld.addRDN((ASN1ObjectIdentifier) CustomBCStyle.DefaultLookUp.get(oid.toLowerCase()), value);
         });
@@ -58,6 +61,11 @@ public class SubjectMap {
     public static Map<String, String> convert(X500Name x500Name) {
         Map<String, String> map = new LinkedHashMap<>();
         RDN[] rdNs = x500Name.getRDNs();
+ /*       RDN[] rdNsReverse = new RDN[rdNs.length];
+        for (int i = 0; i < rdNs.length; i++) {
+            rdNsReverse[i]=rdNs[rdNs.length-i-1];
+        }*/
+
         for (RDN rdN : rdNs) {
             //System.out.print(rdN.getFirst().getType()+"  ");
             //System.out.println(rdN.getFirst().getValue());

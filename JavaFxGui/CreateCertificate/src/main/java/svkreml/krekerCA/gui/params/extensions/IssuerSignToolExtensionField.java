@@ -43,11 +43,17 @@ public class IssuerSignToolExtensionField extends BaseExtensionField {
     public int addFieldToGridPane(GridPane gridPane) {
 
         row = addTextLine(gridPane, row);
+        row = addTextLine(gridPane, row);
+        row = addTextLine(gridPane, row);
+        row = addTextLine(gridPane, row);
 
         rowOfText = row;
         row = row + 20;
         Button add = new Button("ещё");
         gridPane.add(add, 0, ++row);
+
+
+
         add.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
             rowOfText = addTextLine(gridPane, rowOfText);
         });
@@ -73,8 +79,8 @@ public class IssuerSignToolExtensionField extends BaseExtensionField {
         url.setPrefColumnCount(40);
         Label label = new Label("Строка текста");
         textslabel.add(label);
-        gridPane.add(label, 1, ++row);
-        gridPane.add(url, 2, row);
+        gridPane.add(label, 0, ++row);
+        gridPane.add(url, 1, row);
         texts.add(url);
         return row;
     }

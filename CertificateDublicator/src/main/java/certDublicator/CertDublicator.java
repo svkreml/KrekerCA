@@ -4,6 +4,9 @@ import caJava.core.CertAndKey;
 import caJava.core.creator.CertificateCreator;
 import caJava.core.cryptoAlg.CryptoAlg;
 import caJava.core.cryptoAlg.CryptoAlgFactory;
+import caJava.core.cryptoAlg.impl.CryptoAlgGost2001;
+import caJava.core.cryptoAlg.impl.CryptoAlgGost2012_256;
+import caJava.core.cryptoAlg.impl.CryptoAlgGost2012_512;
 import caJava.core.extensions.CertBuildContainer;
 import caJava.core.extensions.ExtensionsHashMap;
 import caJava.core.wrapper.ExtensionsMap;
@@ -69,6 +72,13 @@ public class CertDublicator {
     }
 
     public static void parseCertExtensions(X509Certificate input, CertBuildContainer buildContainer) throws IOException {
+        for (String s : input.getNonCriticalExtensionOIDs()) {
+            byte[] extensionValue = input.getExtensionValue(s);
+            ASN1OctetString extOctetString = ASN1OctetString.getInstance(extensionValue);
+            System.out.printf("%25s = %120s\n", s, fromHex(extOctetString.getLoadedObject().toString()));
+            extensionAdder(buildContainer, s, extensionValue, false);
+        }
+        System.out.println();
         for (String s : input.getCriticalExtensionOIDs()) {
             byte[] extensionValue = input.getExtensionValue(s);
 
@@ -76,16 +86,21 @@ public class CertDublicator {
             System.out.printf("%25s =%120s\n", s, fromHex(extOctetString.getLoadedObject().toString()));
             extensionAdder(buildContainer, s, extensionValue, true);
         }
-        System.out.println();
-        for (String s : input.getNonCriticalExtensionOIDs()) {
-            byte[] extensionValue = input.getExtensionValue(s);
-            ASN1OctetString extOctetString = ASN1OctetString.getInstance(extensionValue);
-            System.out.printf("%25s = %120s\n", s, fromHex(extOctetString.getLoadedObject().toString()));
-            extensionAdder(buildContainer, s, extensionValue, false);
-        }
+
+
     }
     private static void extensionAdder(CertBuildContainer buildContainer, String s, byte[] extensionValue, boolean b) throws IOException {
         switch (s) {
+
+
+
+      /*      case "1.3.6.1.5.5.7.1.1":
+
+                break;*/
+            // case "2.5.29.35":
+                //buildContainer.getX509v3CertificateBuilder().addExtension(new ASN1ObjectIdentifier(s), b, X509ExtensionUtil.fromExtensionValue(extensionValue));
+                //FileManager.write(new File("2.5.29.35.cer"), Base64.getEncoder().encode(X509ExtensionUtil.fromExtensionValue(extensionValue).getEncoded()));
+                //break;
             case "2.5.29.16":
                 extensionsHashMap.get("privateKeyUsagePeriod").apply(buildContainer, null);
                 break;
@@ -109,13 +124,17 @@ public class CertDublicator {
     public static CertAndKey generateDublicate(boolean isCa, String caFileName, String caPrivateKeyFileName, String donorFileName) throws Exception {
         X509Certificate donorCert = CertEnveloper.decodeCert(FileManager.read(new File(donorFileName)));
         Map<String, String> x500donorSubjectName = parseCertName(donorCert);
+
         X500Name subject = SubjectMap.convert(x500donorSubjectName);
         // X500Name subject = getName(donorCert);
         X509Certificate ca = null;
         PrivateKey privateKeyCa = null;
         // create keypair
         Security.addProvider(new BouncyCastleProvider());
-        CryptoAlg cryptoAlg = CryptoAlgFactory.getInstance(donorCert.getSigAlgOID());
+        CryptoAlg cryptoAlg = CryptoAlgGost2012_256.getCryptoAlg();
+      //  CryptoAlg cryptoAlg = CryptoAlgGost2012_256.getCryptoAlg();
+       // CryptoAlg cryptoAlg = CryptoAlgGost2001.getCryptoAlg();
+
 
         SecureRandom random = new SecureRandom();
         KeyPairGenerator keypairGen = KeyPairGenerator.getInstance(cryptoAlg.algorithm, cryptoAlg.cryptoProvider);
@@ -129,13 +148,15 @@ public class CertDublicator {
             ca = CertEnveloper.decodeCert(FileManager.read(new File(caFileName)));
             privateKeyCa = CertEnveloper.decodePrivateKey(new File(caPrivateKeyFileName));
         }
-
+        CryptoAlg cryptoAlgCA = CryptoAlgFactory.getInstance(ca.getSigAlgOID());
         byte[] id = new byte[20];
         random.nextBytes(id);
-        BigInteger serial = new BigInteger(160, random);
+        donorCert.getSerialNumber();
+        BigInteger serial =  donorCert.getSerialNumber().add(new BigInteger("1000"));
+       // BigInteger serial = new BigInteger(160, random);
         //Date date = new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 30);
-        Date startDate = Date.from(LocalDate.of(2018, 07, 01).atStartOfDay(ZoneOffset.UTC).toInstant());
-        Date endDate = Date.from(LocalDate.of(2035, 1, 1).atStartOfDay(ZoneOffset.UTC).toInstant());
+        Date startDate = Date.from(LocalDate.of(2018, 9, 1).atStartOfDay(ZoneOffset.UTC).toInstant());
+        Date endDate = Date.from(LocalDate.of(2019, 9, 1).atStartOfDay(ZoneOffset.UTC).toInstant());
 
 
         X500Name issuer;
@@ -153,7 +174,7 @@ public class CertDublicator {
                 subject,
                 keypair.getPublic());
 
-        CertificateCreator certificateCreator = new CertificateCreator(cryptoAlg);
+        CertificateCreator certificateCreator = new CertificateCreator(cryptoAlgCA);
 
         CertBuildContainer buildContainer = new CertBuildContainer(x509v3CertificateBuilder, keypair, ca, startDate, endDate);
         parseCertExtensions(donorCert, buildContainer);
