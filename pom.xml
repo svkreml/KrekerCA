@@ -35,22 +35,21 @@
         <module>Oscp</module>
         <module>CertificateDublicator</module>
         <module>TsaServer</module>
-        <module>BC_1.60</module>
     </modules>
 
     <dependencies>
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on &ndash;&gt;
+
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
             <version>1.60</version>
         </dependency>
-        &lt;!&ndash; https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk15on &ndash;&gt;
+
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpkix-jdk15on</artifactId>
             <version>1.60</version>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>

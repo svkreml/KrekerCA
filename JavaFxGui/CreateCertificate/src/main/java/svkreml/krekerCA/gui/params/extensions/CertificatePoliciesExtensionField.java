@@ -20,6 +20,7 @@ public class CertificatePoliciesExtensionField extends BaseExtensionField {
 
     public CertificatePoliciesExtensionField() {
         super("certificatePolicies","2.5.29.32, Политики сертификата");
+        policies.put(new CheckBox("Все политики выдачи"), "2.5.29.32.0");
         policies.put(new CheckBox("класс средства ЭП КС1"), "1.2.643.100.113.1");
         policies.put(new CheckBox("класс средства ЭП КС2"), "1.2.643.100.113.2");
         policies.put(new CheckBox("класс средства ЭП КС3"), "1.2.643.100.113.3");
