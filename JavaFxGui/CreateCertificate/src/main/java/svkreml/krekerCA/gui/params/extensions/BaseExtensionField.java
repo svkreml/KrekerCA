@@ -33,7 +33,7 @@ public abstract class BaseExtensionField implements ExtensionField {
         propetyPaneRow = ++row;
 
         propetyPane.add(new Label("Описание: " + discr), 0, 0, 19, 1);
-        propetyPane.add(isCritical, 0, ++row);
+        propetyPane.add(isCritical, 10, ++row);
 
        // row = row + 3;
     }
