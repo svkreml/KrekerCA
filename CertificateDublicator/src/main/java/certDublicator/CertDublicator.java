@@ -7,6 +7,7 @@ import caJava.core.cryptoAlg.CryptoAlgFactory;
 import caJava.core.cryptoAlg.impl.CryptoAlgGost2001;
 import caJava.core.cryptoAlg.impl.CryptoAlgGost2012_256;
 import caJava.core.cryptoAlg.impl.CryptoAlgGost2012_512;
+import caJava.core.cryptoAlg.impl.CryptoRSA;
 import caJava.core.extensions.CertBuildContainer;
 import caJava.core.extensions.ExtensionsHashMap;
 import caJava.core.wrapper.ExtensionsMap;
@@ -17,6 +18,7 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.x509.extension.X509ExtensionUtil;
@@ -93,7 +95,11 @@ public class CertDublicator {
         switch (s) {
 
 
-
+            case "2.5.29.32":
+                extensionsHashMap.get("certificatePolicies").apply(buildContainer, new String[]{"false","1.2.643.100.113.1"});
+                //buildContainer.getX509v3CertificateBuilder().addExtension(new ASN1ObjectIdentifier(s), b, X509ExtensionUtil.fromExtensionValue(extensionValue));
+                //FileManager.write(new File("2.5.29.35.cer"), Base64.getEncoder().encode(X509ExtensionUtil.fromExtensionValue(extensionValue).getEncoded()));
+                break;
       /*      case "1.3.6.1.5.5.7.1.1":
 
                 break;*/
@@ -131,24 +137,27 @@ public class CertDublicator {
         PrivateKey privateKeyCa = null;
         // create keypair
         Security.addProvider(new BouncyCastleProvider());
-        CryptoAlg cryptoAlg = CryptoAlgGost2012_256.getCryptoAlg();
+        CryptoAlg cryptoAlg = CryptoAlgGost2012_512.getCryptoAlg();
       //  CryptoAlg cryptoAlg = CryptoAlgGost2012_256.getCryptoAlg();
-       // CryptoAlg cryptoAlg = CryptoAlgGost2001.getCryptoAlg();
+        //CryptoAlg cryptoAlg = CryptoAlgGost2001.getCryptoAlg();
+       // CryptoAlg cryptoAlg = CryptoRSA.getCryptoAlg(2048);
 
 
         SecureRandom random = new SecureRandom();
         KeyPairGenerator keypairGen = KeyPairGenerator.getInstance(cryptoAlg.algorithm, cryptoAlg.cryptoProvider);
         keypairGen.initialize(new ECGenParameterSpec(cryptoAlg.ellipticCurve));
         KeyPair keypair = keypairGen.generateKeyPair();
-
+        CryptoAlg cryptoAlgCA;
         if(isCa){
             privateKeyCa = keypair.getPrivate();
+            cryptoAlgCA =cryptoAlg;
         }
         else {
             ca = CertEnveloper.decodeCert(FileManager.read(new File(caFileName)));
             privateKeyCa = CertEnveloper.decodePrivateKey(new File(caPrivateKeyFileName));
+           cryptoAlgCA = CryptoAlgFactory.getInstance(ca.getSigAlgOID());
         }
-        CryptoAlg cryptoAlgCA = CryptoAlgFactory.getInstance(ca.getSigAlgOID());
+
         byte[] id = new byte[20];
         random.nextBytes(id);
         donorCert.getSerialNumber();
@@ -164,7 +173,8 @@ public class CertDublicator {
 
             issuer = subject;
         else {
-            issuer = new X500Name(ca.getSubjectX500Principal().getName(X500Principal.RFC2253));
+           issuer = new JcaX509CertificateHolder((X509Certificate) ca).getSubject();
+           //issuer = new X500Name(ca.getSubjectX500Principal().getName(X500Principal.RFC2253));
         }
         X509v3CertificateBuilder x509v3CertificateBuilder = new JcaX509v3CertificateBuilder(
                 issuer,

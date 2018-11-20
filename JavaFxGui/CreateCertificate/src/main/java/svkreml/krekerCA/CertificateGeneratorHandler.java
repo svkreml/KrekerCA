@@ -100,10 +100,10 @@ public class CertificateGeneratorHandler {
             File caPkey = new File(caCertificatePkeyTF.getText());
             byte[] bytes = FileManager.read(ca);
             X509Certificate caCert = CertEnveloper.decodeCert(bytes);
-            PrivateKey privateKey = CertEnveloper.decodePrivateKey(caPkey);
+            PrivateKey caPrivateKey = CertEnveloper.decodePrivateKey(caPkey);
             CryptoAlg cryptoAlgCA = CryptoAlgFactory.getInstance(caCert.getSigAlgOID());
-            certificateCreator = new CertificateCreator(cryptoAlgCA);
-            certAndKey = certificateCreator.generateCertificateV2(x500NameBld.build(), extensionParams, new BigInteger(serialTF.getText(), 16), dateFrom, dateTo, caCert, privateKey);
+            certificateCreator = new CertificateCreator(cryptoAlg);
+            certAndKey = certificateCreator.generateCertificateV2(x500NameBld.build(), extensionParams, new BigInteger(serialTF.getText(), 16), dateFrom, dateTo, caCert, caPrivateKey);
         }
         File saveFolder = new File("outputCerts");
         if (!saveFolder.exists())

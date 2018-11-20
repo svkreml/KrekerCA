@@ -3,6 +3,7 @@ package caJava.core.creator;
 
 import caJava.core.CertAndKey;
 import caJava.core.cryptoAlg.CryptoAlg;
+import caJava.core.cryptoAlg.CryptoAlgFactory;
 import caJava.core.extensions.CertBuildContainer;
 import caJava.core.extensions.ExtensionParam;
 import caJava.core.extensions.ExtensionsHashMap;
@@ -18,6 +19,7 @@ import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -50,6 +52,7 @@ public class CertificateCreator {
     SecureRandom random = new SecureRandom();
     private KeyPairGenerator keypairGen;
     private CryptoAlg cryptoAlg;
+    private CryptoAlg cryptoAlgCA;
 
     public CertificateCreator(CryptoAlg cryptoAlg) throws InvalidAlgorithmParameterException, NoSuchProviderException, NoSuchAlgorithmException {
         //fixme ТУТ КЛЮЧ должен определляться из caPKey, а не конструктора, если это не самоподписанный
@@ -58,6 +61,7 @@ public class CertificateCreator {
             logger.info("Криптопровайдер BC был загружен");
         }
         this.cryptoAlg = cryptoAlg;
+        this.cryptoAlgCA = cryptoAlg;
         keypairGen = KeyPairGenerator.getInstance(cryptoAlg.algorithm, cryptoAlg.cryptoProvider);
         if (cryptoAlg.ellipticCurve == null && cryptoAlg.keyLength != null)
             keypairGen.initialize(cryptoAlg.keyLength, new SecureRandom());
@@ -84,7 +88,7 @@ public class CertificateCreator {
 
 
     public CertAndKey generateCertificateV2(X500Name subject, Vector<ExtensionObject> extensions, BigInteger serial, Date from, Date to) throws Exception {
-        return generateCertificateV2( subject, extensions,  serial,  from, to, null, null);
+        return generateCertificateV2(subject, extensions, serial, from, to, null, null);
     }
 
     public CertAndKey generateCertificateV2(X500Name subject, Vector<ExtensionObject> extensions, BigInteger serial, Date from, Date to, X509Certificate ca, PrivateKey caPKey) throws Exception {
@@ -95,9 +99,12 @@ public class CertificateCreator {
 
 
         X500Name issuer;
-        if (ca != null)
-            issuer = new X500Name(ca.getSubjectX500Principal().getName(X500Principal.RFC2253));
-        else {
+        if (ca != null) {
+            issuer = new JcaX509CertificateHolder((X509Certificate) ca).getSubject();
+            cryptoAlgCA = CryptoAlgFactory.getInstance(ca.getSigAlgOID());
+            //issuer = new X500Name(ca.getSubjectX500Principal().getName(X500Principal.RFC2253));
+        }
+        else{
             issuer = subject;
         }
         //Создание заготовки под сертификат
@@ -110,30 +117,29 @@ public class CertificateCreator {
                 keypair.getPublic());
 
         //todo все расширения должны быть в каком-то конфиге, который на предыдущем этапе грузится из файла
-        CertBuildContainer buildContainer = new CertBuildContainer(x509v3CertificateBuilder, keypair, ca,from,to);
+        CertBuildContainer buildContainer = new CertBuildContainer(x509v3CertificateBuilder, keypair, ca, from, to);
 
         for (ExtensionObject extension : extensions) {
             extension.addExtension(buildContainer);
         }
 
 
-
         // extensionsGucRF(ca, keypair, x509v3CertificateBuilder);
         // build BouncyCastle certificate
 
-       // if(cryptoAlg.signatureAlgorithm
+        // if(cryptoAlg.signatureAlgorithm
 
         if (caPKey == null) caPKey = keypair.getPrivate();
         return buildCertificate(caPKey, keypair, x509v3CertificateBuilder);
     }
 
 
-
-@Deprecated
+    @Deprecated
     public CertAndKey generateCertificate(X500Name subject, Vector<ExtensionParam> extensions, BigInteger serial, Date from, Date to) throws CertificateException, OperatorCreationException {
-        return generateCertificate( subject, extensions,  serial,  from, to, null, null);
+        return generateCertificate(subject, extensions, serial, from, to, null, null);
     }
-@Deprecated
+
+    @Deprecated
     public CertAndKey generateCertificate(X500Name subject, Vector<ExtensionParam> extensions, BigInteger serial, Date from, Date to, X509Certificate ca, PrivateKey caPKey) throws CertificateException, OperatorCreationException {
         logger.info("Генерация сертификата\n\t" + subject + ", дата '" + from + "' - '" + to + "'");
         //Генерация пары ключей
@@ -142,7 +148,8 @@ public class CertificateCreator {
 
         X500Name issuer;
         if (ca != null)
-            issuer = new X500Name(ca.getSubjectX500Principal().getName(X500Principal.RFC2253));
+            issuer = new JcaX509CertificateHolder((X509Certificate) ca).getSubject();
+            //issuer = new X500Name(ca.getSubjectX500Principal().getName(X500Principal.RFC2253));
         else {
             issuer = subject;
         }
@@ -172,7 +179,7 @@ public class CertificateCreator {
 
 //fixme ТУТ КЛЮЧ должен определляться из caPKey, а не конструктора
 
-        ContentSigner signer = new JcaContentSignerBuilder(cryptoAlg.signatureAlgorithm).build(caPKey);
+        ContentSigner signer = new JcaContentSignerBuilder(cryptoAlgCA.signatureAlgorithm).build(caPKey);
         X509CertificateHolder holder = x509v3CertificateBuilder.build(signer);
 
         // convert to JRE certificate
@@ -182,6 +189,7 @@ public class CertificateCreator {
         logger.info("Сертификат создан " + certificate);
         return new CertAndKey(keypair, certificate);
     }
+
     @Deprecated
     public CertAndKey createCert(LinkedHashMap<String, Object> name, Date startDate, Date endDate, X509Certificate caCert, PrivateKey caCertPrivateKey) throws CertificateException, IOException, OperatorCreationException, NoSuchAlgorithmException {
         logger.info("Генерация сертификата\n\t" + name + ", дата '" + startDate + "' - '" + endDate + "'");

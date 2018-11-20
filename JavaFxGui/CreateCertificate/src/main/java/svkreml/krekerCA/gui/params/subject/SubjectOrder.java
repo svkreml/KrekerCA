@@ -10,7 +10,7 @@ public class SubjectOrder {
 
     public SubjectOrder() {
         subjects.put("CN", CustomBCStyle.CN);
-        subjects.put("SN", CustomBCStyle.SURNAME);
+        subjects.put("SURNAME", CustomBCStyle.SURNAME);
         subjects.put("GIVENNAME", CustomBCStyle.GIVENNAME);
         subjects.put("T", CustomBCStyle.T);
         subjects.put("O", CustomBCStyle.O);
