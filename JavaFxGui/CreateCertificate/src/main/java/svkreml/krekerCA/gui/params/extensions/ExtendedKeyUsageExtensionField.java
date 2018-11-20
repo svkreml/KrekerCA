@@ -50,7 +50,7 @@ public class ExtendedKeyUsageExtensionField extends BaseExtensionField {
     public int addFieldToGridPane(GridPane gridPane) {
 
         for (CheckBox checkBox : keyUsages.keySet()) {
-            gridPane.add(checkBox, 1, ++row, 3, 1);
+            propetyPane.add(checkBox, 0, ++row, 3, 1);
         }
 
         return row;

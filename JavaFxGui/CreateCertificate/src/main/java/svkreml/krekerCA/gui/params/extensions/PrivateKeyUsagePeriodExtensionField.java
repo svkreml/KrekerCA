@@ -47,15 +47,16 @@ public class PrivateKeyUsagePeriodExtensionField extends BaseExtensionField {
 
     public int addFieldToGridPane(GridPane gridPane) {
 
-        gridPane.add(new Label("dateFrom"), 1, ++row);
-        gridPane.add(dateFrom, 2, row);
-        gridPane.add(new Label("dateTo"), 1, ++row);
-        gridPane.add(dateTo, 2, row);
         Label label = new Label("Заполнить автоматически");
         Tooltip tooltip = new Tooltip("Дата заполнится автоматически из времени действия сертификата, поля при этом так и останутся пустыми и будут игнорироваться");
         label.setTooltip(tooltip);
-        gridPane.add(label, 1, ++row);
-        gridPane.add(auto, 2, row);
+
+        propetyPane.add(new Label("dateFrom"), 0, ++row);
+        propetyPane.add(dateFrom, 1, row);
+        propetyPane.add(new Label("dateTo"), 0, ++row);
+        propetyPane.add(dateTo, 1, row);
+        propetyPane.add(label, 0, ++row);
+        propetyPane.add(auto, 1, row);
         return row;
     }
 }

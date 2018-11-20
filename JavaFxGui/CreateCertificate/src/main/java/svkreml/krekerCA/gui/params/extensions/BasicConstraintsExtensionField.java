@@ -32,10 +32,10 @@ public class BasicConstraintsExtensionField extends BaseExtensionField {
 
     public int addFieldToGridPane(GridPane gridPane) {
         cont.setPrefColumnCount(40);
-        gridPane.add(new Label(name), 0, row);
-        gridPane.add(new Label(description), 1, row, 4, 1);
-        gridPane.add(new Label("(true, false или число)"), 1, ++row);
-        gridPane.add(cont, 2, row);
+        propetyPane.add(new Label(name), 0, ++row);
+        propetyPane.add(new Label(description), 1, row, 4, 1);
+        propetyPane.add(new Label("(true, false или число)"), 1, ++row);
+        propetyPane.add(cont, 2, row);
         return row;
     }
 }

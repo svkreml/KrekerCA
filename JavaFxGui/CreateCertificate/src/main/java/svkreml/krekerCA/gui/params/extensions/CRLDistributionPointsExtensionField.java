@@ -50,12 +50,12 @@ public class CRLDistributionPointsExtensionField extends BaseExtensionField {
         rowOfUrl = row;
         row = row + 20;
         Button button = new Button("ещё");
-        gridPane.add(button, 0, ++row);
+        propetyPane.add(button, 0, ++row);
         button.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
             rowOfUrl = addUrl(gridPane, rowOfUrl);
         });
         Button remove = new Button("удалить");
-        gridPane.add(remove, 0, ++row);
+        propetyPane.add(remove, 0, ++row);
         remove.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
             if (!urls.isEmpty())
                 rowOfUrl = removeTextLine(gridPane, rowOfUrl);
@@ -64,8 +64,8 @@ public class CRLDistributionPointsExtensionField extends BaseExtensionField {
     }
 
     private int removeTextLine(GridPane gridPane, int row) {
-        gridPane.getChildren().remove(urls.lastElement());
-        gridPane.getChildren().remove(textslabel.lastElement());
+        propetyPane.getChildren().remove(urls.lastElement());
+        propetyPane.getChildren().remove(textslabel.lastElement());
         urls.remove(urls.lastElement());
         textslabel.remove(textslabel.lastElement());
         return row--;
@@ -76,8 +76,8 @@ public class CRLDistributionPointsExtensionField extends BaseExtensionField {
         url.setPrefColumnCount(40);
         Label label = new Label("URL");
         textslabel.add(label);
-        gridPane.add(label, 0, ++row);
-        gridPane.add(url, 1, row);
+        propetyPane.add(label, 0, ++row);
+        propetyPane.add(url, 1, row);
         urls.add(url);
         return row;
     }

@@ -48,12 +48,12 @@ public class SubjectSignToolExtensionField extends BaseExtensionField {
         rowOfText = row;
         row = row + 20;
         Button add = new Button("ещё");
-        gridPane.add(add, 0, ++row);
+        propetyPane.add(add, 0, ++row);
         add.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
             rowOfText = addTextLine(gridPane, rowOfText);
         });
         Button remove = new Button("удалить");
-        gridPane.add(remove, 0, ++row);
+        propetyPane.add(remove, 0, ++row);
         remove.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
             if(!texts.isEmpty())
             rowOfText = removeTextLine(gridPane, rowOfText);
@@ -62,8 +62,8 @@ public class SubjectSignToolExtensionField extends BaseExtensionField {
     }
 
     private int removeTextLine(GridPane gridPane, int row) {
-        gridPane.getChildren().remove(texts.lastElement());
-        gridPane.getChildren().remove(textslabel.lastElement());
+        propetyPane.getChildren().remove(texts.lastElement());
+        propetyPane.getChildren().remove(textslabel.lastElement());
         texts.remove(texts.lastElement());
         textslabel.remove(textslabel.lastElement());
         return row--;
@@ -74,8 +74,8 @@ public class SubjectSignToolExtensionField extends BaseExtensionField {
         url.setPrefColumnCount(40);
         Label label = new Label("Строка текста");
         textslabel.add(label);
-        gridPane.add(label, 1, ++row);
-        gridPane.add(url, 2, row);
+        propetyPane.add(label, 0, ++row);
+        propetyPane.add(url, 1, row);
         texts.add(url);
         return row;
     }
