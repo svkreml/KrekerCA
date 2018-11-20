@@ -44,31 +44,31 @@ public class KeyUsageExtensionField extends BaseExtensionField {
     public int addFieldToGridPane(GridPane gridPane) {
 
         keyUsages.put(KeyUsage.digitalSignature, new CheckBox("Цифровая подпись"));
-        gridPane.add(keyUsages.get(KeyUsage.digitalSignature), 1, ++row);
+        propetyPane.add(keyUsages.get(KeyUsage.digitalSignature), 0, ++row);
 
         keyUsages.put(KeyUsage.nonRepudiation, new CheckBox("Неотрекаемость"));
-        gridPane.add(keyUsages.get(KeyUsage.nonRepudiation), 1, ++row);
+        propetyPane.add(keyUsages.get(KeyUsage.nonRepudiation), 0, ++row);
 
         keyUsages.put(KeyUsage.keyEncipherment, new CheckBox("Шифрование ключей"));
-        gridPane.add(keyUsages.get(KeyUsage.keyEncipherment), 1, ++row);
+        propetyPane.add(keyUsages.get(KeyUsage.keyEncipherment), 0, ++row);
 
         keyUsages.put(KeyUsage.dataEncipherment, new CheckBox("Шифрование данных"));
-        gridPane.add(keyUsages.get(KeyUsage.dataEncipherment), 1, ++row);
+        propetyPane.add(keyUsages.get(KeyUsage.dataEncipherment), 0, ++row);
 
         keyUsages.put(KeyUsage.keyAgreement, new CheckBox("Согласование ключей"));
-        gridPane.add(keyUsages.get(KeyUsage.keyAgreement), 1, ++row);
+        propetyPane.add(keyUsages.get(KeyUsage.keyAgreement), 0, ++row);
 
         keyUsages.put(KeyUsage.keyCertSign, new CheckBox("Подписывание сертификатов"));
-        gridPane.add(keyUsages.get(KeyUsage.keyCertSign), 1, ++row);
+        propetyPane.add(keyUsages.get(KeyUsage.keyCertSign), 0, ++row);
 
         keyUsages.put(KeyUsage.cRLSign, new CheckBox("Автономное подписание списка отзыва (CRL), Подписывание списка отзыва (CRL)"));
-        gridPane.add(keyUsages.get(KeyUsage.cRLSign), 1, ++row);
+        propetyPane.add(keyUsages.get(KeyUsage.cRLSign), 0, ++row);
 
         keyUsages.put(KeyUsage.encipherOnly, new CheckBox("Только шифрование"));
-        gridPane.add(keyUsages.get(KeyUsage.encipherOnly), 1, ++row);
+        propetyPane.add(keyUsages.get(KeyUsage.encipherOnly), 0, ++row);
 
         keyUsages.put(KeyUsage.decipherOnly, new CheckBox("Только расшифровка"));
-        gridPane.add(keyUsages.get(KeyUsage.decipherOnly), 1, ++row);
+        propetyPane.add(keyUsages.get(KeyUsage.decipherOnly), 0, ++row);
 
         return row;
     }

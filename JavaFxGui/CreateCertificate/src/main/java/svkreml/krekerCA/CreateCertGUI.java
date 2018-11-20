@@ -1,9 +1,14 @@
 package svkreml.krekerCA;
 
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import svkreml.krekerCA.gui.params.extensions.*;
 import svkreml.krekerCA.gui.params.subject.SubjectField;
 import svkreml.krekerCA.gui.params.subject.SubjectOrder;
@@ -17,7 +22,6 @@ public class CreateCertGUI {
     GridPane createCertPane = new GridPane();
 
 
-
     TextField serialTF = new TextField("123123123");
     DatePicker dateFromDP = new DatePicker();
     DatePicker dateToDP = new DatePicker();
@@ -26,20 +30,22 @@ public class CreateCertGUI {
     Vector<ExtensionField> extensionFields = new Vector<>();
     Vector<SubjectField> subjectFields = new Vector<>();
     CertPath certPath = new CertPath();
+
     public Tab initCreator() {
         Tab createCertTab = new Tab("Создать сертификат");
 
         int row = 5;
 
+        createCertPane.setPadding(new Insets(10, 10, 10, 10));
         createCertPane.add(certPath.initPath(), 0, 0, 20, 6);
 
 
         algsCB.getItems().addAll("gost2012_256", "gost2012_512", "gost2001", "rsa2048", "rsa4096");
         createCertPane.setPrefWidth(1000);
         ColumnConstraints col1 = new ColumnConstraints();
-        col1.setPercentWidth(30);
+        col1.setPercentWidth(20);
         ColumnConstraints col2 = new ColumnConstraints();
-        col2.setPercentWidth(20);
+        col2.setPercentWidth(40);
         ColumnConstraints col3 = new ColumnConstraints();
         col3.setPercentWidth(30);
         createCertPane.getColumnConstraints().addAll(col1, col2, col3);
@@ -50,16 +56,21 @@ public class CreateCertGUI {
         // certPathPane.setVgap(0);
         createCertPane.add(new Label("Создание Сертификата"), 0, ++row, 3, 1);
 
-
         row = setBaseFields(row);
         row = setSubject(row);
         row = setExtensions(row);
+
         Button createCert = new Button("Создать сертификат!");
-
-
-        createCertPane.add(createCert, 0, ++row, 1, 1);
+        createCert.setPadding(new Insets(5, 10, 5, 10));
+        createCert.setAlignment(Pos.CENTER_RIGHT);
         createCert.setOnAction(this::generateCertificate);
-        createCertTab.setContent(new ScrollPane(createCertPane));
+
+        VBox tabRootBox = new VBox();
+        tabRootBox.getChildren().add(new ScrollPane(createCertPane));
+        tabRootBox.getChildren().add(createCert);
+
+        createCertTab.setContent(tabRootBox);
+
         return createCertTab;
     }
 
@@ -92,7 +103,7 @@ public class CreateCertGUI {
 
     private int setBaseFields(int row) {
         // row = row + 3;
-        createCertPane.add(new Label("------------------------------------------------------------------------------------------------------------------------"), 0, ++row, 10, 1);
+        createCertPane.add(new Separator(), 0, ++row, 10, 1);
         createCertPane.add(new Label("Данные"), 1, ++row, 3, 1);
 
         createCertPane.add(new Label("Серийный номер"), 0, ++row, 1, 1);
@@ -109,7 +120,7 @@ public class CreateCertGUI {
 
     private int setExtensions(int row) {
         row = row + 3;
-        createCertPane.add(new Label("------------------------------------------------------------------------------------------------------------------------"), 0, ++row, 10, 1);
+        createCertPane.add(new Separator(), 0, ++row, 10, 1);
         createCertPane.add(new Label("Заполнение расширений"), 1, ++row, 3, 1);
 
 
@@ -136,7 +147,7 @@ public class CreateCertGUI {
     }
 
     private int setSubject(int row) {
-        createCertPane.add(new Label("------------------------------------------------------------------------------------------------------------------------"), 0, ++row, 10, 1);
+        createCertPane.add(new Separator(), 0, ++row, 10, 1);
         createCertPane.add(new Label("Заполнение поля Субъект"), 1, ++row, 3, 1);
 
         createCertPane.add(new Label("OID"), 0, ++row, 1, 1);

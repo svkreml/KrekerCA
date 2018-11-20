@@ -1,5 +1,7 @@
 package svkreml.krekerCA.gui.params.extensions;
 
+import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -9,22 +11,40 @@ public abstract class BaseExtensionField implements ExtensionField {
     String name;
     String description;
     GridPane gridPane = new GridPane();
-    CheckBox isUsed = new CheckBox("Использовать при генерации");
+    GridPane propetyPane = new GridPane();
+    CheckBox isUsed;
     CheckBox isCritical = new CheckBox("Критическое расширение");
     int row = 0;
+    int propetyPaneRow = 0;
 
     public BaseExtensionField(String name, String discr) {
         this.name = name;
         this.description = discr;
-        gridPane.add(new Separator(), 0, ++row,20,1);
-        gridPane.add(new Label("Имя: " + name), 0, ++row,19,1);
-        gridPane.add(new Label("                                                                                                                                                                                                        "), 0, row,19,1);
-        gridPane.add(isUsed, 20, row);
-        gridPane.add(new Label("Описание: " + discr), 0, ++row,19,1);
-        gridPane.add(isCritical, 19, row);
-        row=row+3;
+
+        isUsed = new CheckBox("Расширение: " + name);
+        isUsed.setOnAction(this::changeIsUsed);
+
+        Separator separator = new Separator();
+        separator.setPadding(new Insets(15,0,5,0 ));
+
+        gridPane.add(separator, 0, ++row, 20, 1);
+        gridPane.add(isUsed, 0, ++row, 19, 1);
+        //gridPane.add(propetyPane, 0, ++row);
+        propetyPaneRow = ++row;
+
+        propetyPane.add(new Label("Описание: " + discr), 0, 0, 19, 1);
+        propetyPane.add(isCritical, 0, ++row);
+
+       // row = row + 3;
     }
 
+    private void changeIsUsed(ActionEvent actionEvent) {
+        if (getIsUsed()) {
+            gridPane.add(propetyPane, 0, propetyPaneRow);
+        } else {
+            gridPane.getChildren().remove(propetyPane);
+        }
+    }
 
     public String getName() {
         return name;
