@@ -10,6 +10,7 @@ import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import javax.security.auth.x500.X500Principal;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateEncodingException;
 import java.util.*;
 import java.util.function.BiFunction;
 @Deprecated
@@ -246,15 +247,12 @@ public class ExtensionsHashMap extends HashMap<String, BiFunction<CertBuildConta
                     if (certBuildContainer.getCaCert() == null) {
                         throw new NullPointerException("Если есть authorityKeyIdentifier, то должен быть УЦ");
                     }
-                    GeneralName generalName = new GeneralName(new X500Name(certBuildContainer.getCaCert().getSubjectX500Principal().getName(X500Principal.RFC2253)));
-
-                    GeneralNames generalNames = new GeneralNames(generalName);
 
                     certBuildContainer.getX509v3CertificateBuilder().addExtension(Extension.authorityKeyIdentifier, Boolean.valueOf(params[0]),
-                            new JcaX509ExtensionUtils().createAuthorityKeyIdentifier(certBuildContainer.getCaCert().getPublicKey(), generalNames, certBuildContainer.getCaCert().getSerialNumber()));
+                            new JcaX509ExtensionUtils().createAuthorityKeyIdentifier(certBuildContainer.getCaCert()));
                     return true;
                 }
-            } catch (IOException | NoSuchAlgorithmException e) {
+            } catch (IOException | NoSuchAlgorithmException | CertificateEncodingException e) {
                 e.printStackTrace();
             }
             return false;
