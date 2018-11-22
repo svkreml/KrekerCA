@@ -11,7 +11,6 @@ import org.bouncycastle.cert.ocsp.*;
 import sun.security.x509.SerialNumber;
 import sun.security.x509.X509CertImpl;
 import svkreml.krekerCa.gui.JavaFxUtils;
-
 import java.io.*;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
