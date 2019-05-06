@@ -61,7 +61,7 @@ public class CrlGeneratorHandler {
     }
 
     public void generate() throws Exception {
-        File ca = new File(certPath.getCaCertificatePkeyTF().getText());
+        File ca = new File(certPath.getCaCertificateTF().getText());
         File caPkey = new File(certPath.getCaCertificatePkeyTF().getText());
         byte[] bytes = FileManager.read(ca);
         X509Certificate caCert = CertEnveloper.decodeCert(bytes);
