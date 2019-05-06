@@ -7,6 +7,7 @@ import caJava.fileManagement.FileManager;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.cert.X509CRLHolder;
@@ -35,7 +36,7 @@ public class CrlGeneratorHandler {
     Vector<DatePicker> dateOfAdds = new Vector<>();
     Vector<ChoiceBox<String>> reasons = new Vector<>();
     Vector<Label> textslabel = new Vector<>();
-    int rowOfText = 2;
+    int rowOfText = 50;
 
     TextField crlSerial = new TextField("1");
     DatePicker timeOfLife = new DatePicker(LocalDate.now());
@@ -122,8 +123,11 @@ int row = 6;
                 e.printStackTrace();
             }
         });
+        gridPaneCrl.add(new Separator(), 0, ++row,50, 1);
+        gridPaneCrl.add(new Separator(), 0, ++row,50, 1);
 
-
+        gridPaneCrl.add(new Separator(), 0, 198,50, 1);
+        gridPaneCrl.add(new Separator(), 0, 199,50, 1);
         Button add = new Button("ещё");
         gridPaneCrl.add(add, 0, 200);
         add.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
@@ -153,21 +157,18 @@ int row = 6;
     }
     HashMap<String,Integer> reasonCrl = new HashMap<>();
     private int addTextLine(int row) {
-
-
         ChoiceBox<String> reasonCB = new ChoiceBox<>();
         reasonCB.getItems().addAll(reasonCrl.keySet());
-        TextField url = new TextField();
-        Label label = new Label("Серийный номер: ");
+        TextField serialNumber = new TextField();
+        serialNumber.setPromptText("Серийный номер сертификата");
+        Label label = new Label("Запись в CRL : ");
         textslabel.add(label);
-        gridPaneCrl.add(label, 1, ++row);
-        gridPaneCrl.add(url, 2, row);
-        gridPaneCrl.add(reasonCB, 3, row);
+        gridPaneCrl.add(label, 0, ++row);
+        gridPaneCrl.add(serialNumber, 1, row, 6, 1);
+        gridPaneCrl.add(reasonCB, 10, row);
         DatePicker dateOfAdd1 = new DatePicker();
-        gridPaneCrl.add(dateOfAdd1, 5, row);
-
-
-        serials.add(url);
+        gridPaneCrl.add(dateOfAdd1, 11, row);
+        serials.add(serialNumber);
         reasons.add(reasonCB);
         dateOfAdds.add(dateOfAdd1);
 
