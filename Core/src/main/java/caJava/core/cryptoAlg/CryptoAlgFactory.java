@@ -17,7 +17,8 @@ public class CryptoAlgFactory {
                 return CryptoAlgGost2012_256.getCryptoAlg();
             case "1.2.643.7.1.1.3.3":
                 return CryptoAlgGost2012_512.getCryptoAlg();
-            case "RSA":
+            case "SHA256withRSA":
+                return CryptoRSA.getCryptoAlg(2048);
             case "???"://fixme rsa =2012_512
                 return CryptoRSA.getCryptoAlg(2048);
             default:
