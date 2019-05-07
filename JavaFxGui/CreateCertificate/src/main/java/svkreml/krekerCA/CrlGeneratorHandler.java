@@ -13,6 +13,7 @@ import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.cert.X509CRLHolder;
 import org.bouncycastle.cert.X509v2CRLBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CRLConverter;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
@@ -71,7 +72,7 @@ public class CrlGeneratorHandler {
                 caCert.getSigAlgName());
 
         X509v2CRLBuilder builder = new X509v2CRLBuilder(
-                new X500Name(caCert.getIssuerX500Principal().getName()),
+                new JcaX509CertificateHolder((X509Certificate) caCert).getSubject(),
                 Date.from(createDate.getValue().atStartOfDay(ZoneOffset.UTC).toInstant())
         );
         builder.setNextUpdate(Date.from(timeOfLife.getValue().atStartOfDay(ZoneOffset.UTC).toInstant()));
