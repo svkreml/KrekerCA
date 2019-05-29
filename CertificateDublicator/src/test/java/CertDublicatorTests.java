@@ -51,8 +51,8 @@ public class CertDublicatorTests {
         MeUtils.loadBC();
         //String caCert = "../ConsoleApp/exampleKeys/gost2001Ca.der";
         // String caPrivateKey = "../ConsoleApp/exampleKeys/gost2001Ca.der.pkey";
-        String donorCertificate = "C:\\Users\\s.kremlev\\Desktop\\certs copy\\donor\\guc.cer";
-        String saveTo = "C:\\Users\\s.kremlev\\Desktop\\certs copy\\copyGuc.cer";
+        String donorCertificate = "C:\\Users\\s.kremlev\\Desktop\\Minkom.cer";
+        String saveTo = "C:\\Users\\s.kremlev\\Desktop\\MinkomFAKEFAKEFAKE.cer";
         CertAndKey certAndKey = CertDublicator.generateDublicate(donorCertificate);
         CertDublicator.saveToDer(certAndKey.getKeyPair(), certAndKey.getCertificate().getEncoded(), saveTo);
     }
