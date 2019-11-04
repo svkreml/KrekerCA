@@ -1,0 +1,15 @@
+{
+  "recreateTimerSeconds" : 10,
+  "crlGenerateTimeoffset" : -1000,
+  "crlTTLseconds" : 18000,
+  "crlConfigList" : [ {
+    "certificatePath" : "certForCA\\output\\etalon\\ca2000000000002.cer",
+    "privateKeyPath" : "certForCA\\output\\etalon\\ca2000000000002.cer.pkey",
+    "crlPath" : "certForCA\\output\\ca2000000000002.crl",
+    "revokedDtoLisconfig" : [ {
+      "serialHex" : "1234567890",
+      "crlReason" : 0,
+      "addDate" : "11/12/2015 12:34:56"
+    } ]
+  } ]
+}

@@ -2,22 +2,54 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>CA</artifactId>
-        <groupId>ByMe</groupId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>svkreml</groupId>
+        <artifactId>KrekerCa</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
     <artifactId>OcspClient</artifactId>
-    <dependencies>
-        <dependency>
-            <groupId>ByMe</groupId>
-            <artifactId>BC_1.60</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
+
+<dependencies>
+    <dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <version>1.1.1</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.synapse</groupId>
+        <artifactId>synapse-commons</artifactId>
+        <version>2.1.0</version>
+    </dependency>
+    <dependency>
+        <groupId>svkreml</groupId>
+        <artifactId>Core</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <scope>compile</scope>
+    </dependency>
 
 
+</dependencies>
+    <build>
+<!--        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.fxml</include>
+                </includes>
+            </resource>
+        </resources>-->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

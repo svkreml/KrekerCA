@@ -1,0 +1,16 @@
+{
+  "serverPort" : 8082,
+  "servletInstances" : [ {
+    "serverPath" : "/ocsp",
+    "caCertPath" : "certForCA/output/etalon/ca2000000000002.cer",
+    "ocspSingingCertPath" : "certForCA/output/etalon/ocsp.cer",
+    "ocspSingingPkeyPath" : "certForCA/output/etalon/ocsp.cer.pkey",
+    "crlPath" : "certForCA/output/etalon/kreker2000000000002.crl"
+  }, {
+    "serverPath" : "/ocsp2",
+    "caCertPath" : "certForCA/output/etalon/ca2000000000002.cer",
+    "ocspSingingCertPath" : "certForCA/output/etalon/ocsp.cer",
+    "ocspSingingPkeyPath" : "certForCA/output/etalon/ocsp.cer.pkey",
+    "crlPath" : "certForCA/output/etalon/kreker2000000000002.crl"
+  } ]
+}
